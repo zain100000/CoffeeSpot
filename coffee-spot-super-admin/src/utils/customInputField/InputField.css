@@ -1,0 +1,68 @@
+@import url("../../styles/globalStyles.css");
+
+/* ------------------------------ INPUT FIELD CSS ------------------------------------ */
+/* ----------------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------------- */
+
+.custom-input-wrapper {
+  width: 100%;
+}
+
+/* Shared base input style */
+.custom-input {
+  width: 100%;
+  padding: 10px; /* More top padding for label space */
+  border: 2px solid var(--gray);
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--font-size-base, 1rem);
+  font-family: var(--font-family);
+  outline: none;
+  background: transparent;
+  color: var(--dark);
+  transition: all 0.3s ease;
+  position: relative;
+  color: var(--dark);
+}
+
+.custom-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.input-container {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+/* Floating label placed inside the input border */
+.floating-label {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  font-size: 0.85rem;
+  color: var(--dark);
+  padding: 0 4px;
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+/* When input is focused or has content */
+.input-container.has-value .floating-label,
+.input-container:focus-within .floating-label {
+  top: -8px;
+  left: 12px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--dark);
+}
+
+/* Ensure background shows through for seamless look */
+.input-container .floating-label {
+  z-index: 1;
+}
+
+/* Skip floating label for dropdowns and textarea */
+.input-container.no-float .floating-label {
+  display: none;
+}

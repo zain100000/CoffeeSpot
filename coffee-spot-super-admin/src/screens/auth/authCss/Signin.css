@@ -1,0 +1,124 @@
+@import url("../../../styles/globalStyles.css");
+
+/* ------------------------------ SIGNIN SCREEN CSS ------------------------------ */
+/* ------------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------------- */
+
+#signin-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary), rgba(0, 0, 0, 0.7));
+  backdrop-filter: blur(10px);
+}
+
+#signin-screen .card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: var(--spacing-lg);
+  animation: slideIn 0.5s ease-in-out;
+}
+
+#signin-screen .card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#signin-screen .logo-container {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--white);
+  font-size: 1.5rem;
+  font-weight: 700;
+  opacity: 0;
+  animation: fadeIn 0.8s ease-in-out forwards;
+  gap: 10px;
+}
+
+#signin-screen .logo-container .logo {
+  width: 40px;
+  height: 64px;
+  margin-bottom: 20px;
+}
+
+#signin-screen .logo-container .logo-text {
+  font-size: 2rem;
+  margin-top: -10px;
+  margin-left: 2px;
+}
+
+#signin-screen .form-container {
+  margin-top: 5px;
+  width: 100%;
+  animation: fadeIn 1s ease-in-out;
+}
+
+#signin-screen .email-container,
+#signin-screen .password-container {
+  margin-bottom: var(--spacing-md);
+}
+
+#signin-screen .label,
+#signin-screen .fg-label {
+  font-weight: 500;
+  color: var(--white);
+  font-size: var(--font-size-sm);
+}
+
+#signin-screen .fg-label {
+  cursor: pointer;
+  text-align: right;
+  display: block;
+}
+
+#signin-screen .btn-container {
+  margin-top: var(--spacing-lg);
+  animation: fadeIn 1.2s ease-in-out;
+}
+
+/* #signin-screen .signup-container {
+  display: flex;
+  justify-content: space-around;
+  margin-top: var(--spacing-md);
+  animation: fadeIn 1.4s ease-in-out;
+}
+
+#signin-screen .signup-container .signup-label {
+  font-weight: 500;
+  color: var(--tertiary);
+  transition: color 0.3s ease;
+}
+
+#signin-screen .signup-container .signup-label:hover {
+  color: var(--white);
+} */
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

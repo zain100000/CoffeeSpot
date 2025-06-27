@@ -1,0 +1,241 @@
+@import url("../../../styles/globalStyles.css");
+
+/* ------------------------------ ORDER SCREEN CSS ----------------------------------- */
+/* ----------------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------------- */
+
+#orders .orders-container {
+  padding: 28px;
+  background: var(--white);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+#orders .orders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+#orders .orders-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0;
+  padding-left: 10px;
+  border-left: 4px solid var(--primary);
+}
+
+#orders .loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+#orders .table-responsive {
+  overflow-x: auto;
+}
+
+#orders .orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+#orders .orders-table thead {
+  background-color: var(--primary);
+  color: var(--white);
+}
+
+#orders .orders-table th {
+  padding: 16px;
+  text-align: left;
+  font-weight: 600;
+}
+
+#orders .orders-table td {
+  padding: 16px;
+  border-bottom: 1px solid var(--light-gray);
+  vertical-align: middle;
+}
+
+#orders .orders-table tr:last-child td {
+  border-bottom: none;
+}
+
+#orders .orders-table tr:hover {
+  background-color: var(--light-bg);
+}
+
+#orders .order-id {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+#orders .order-customer {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+#orders .payment-status .payment-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+#orders .payment-status .payment-badge.pending {
+  background-color: var(--warning-light);
+  color: var(--warning-dark);
+}
+
+#orders .payment-status .payment-badge.paid {
+  background-color: var(--success-light);
+  color: var(--success-dark);
+}
+
+#orders .order-status .status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+#orders .order-status .status-badge.pending {
+  background-color: var(--warning-light);
+  color: var(--warning-dark);
+}
+
+#orders .order-status .status-badge.processing {
+  background-color: var(--info-light);
+  color: var(--info-dark);
+}
+
+#orders .order-status .status-badge.shipped {
+  background-color: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+#orders .order-status .status-badge.delivered {
+  background-color: var(--success-light);
+  color: var(--success-dark);
+}
+
+#orders .order-status .status-badge.cancelled {
+  background-color: var(--danger-light);
+  color: var(--danger-dark);
+}
+
+#orders .actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+#orders .action-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#orders .action-btn:hover {
+  transform: scale(1.1);
+}
+
+#orders .action-btn.view-detail {
+  background-color: var(--primary-light);
+  color: var(--primary);
+}
+
+#orders .action-btn.status-change {
+  background-color: var(--info-light);
+  color: var(--info-dark);
+}
+
+#orders .action-btn.payment-status-change {
+  background-color: var(--success-light);
+  color: var(--success-dark);
+}
+
+#orders .no-orders-found {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 24px;
+  background-color: var(--tertiary);
+  border-radius: 10px;
+  margin-top: 20px;
+  box-shadow: 0 2px 6px rgba(198, 40, 40, 0.1);
+}
+
+#orders .no-orders-found i {
+  font-size: 30px;
+  color: var(--light-gray);
+}
+
+#orders .no-orders-found p {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Modal Buttons */
+#orders .modal-btn-processing {
+  background: var(--warning-light);
+  color: var(--warning-dark);
+}
+
+#orders .modal-btn-shipped {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+#orders .modal-btn-delivered {
+  background: var(--success-light);
+  color: var(--success-dark);
+}
+
+#orders .modal-btn-paid {
+  background: var(--success-light);
+  color: var(--success-dark);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  #orders .orders-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  #orders .orders-table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  #orders .actions {
+    flex-direction: column;
+    gap: 4px;
+  }
+}

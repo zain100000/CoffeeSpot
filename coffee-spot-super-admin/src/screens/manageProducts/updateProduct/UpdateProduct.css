@@ -1,0 +1,71 @@
+@import url("../../../styles/globalStyles.css");
+
+/* ------------------------------ UPDATE PRODUCT CSS --------------------------------- */
+/* ----------------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------------- */
+
+#update-product {
+  background: var(--white);
+  padding: 20px 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 20px;
+}
+
+#update-product .products-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0;
+  padding-left: 10px;
+  border-left: 4px solid var(--primary);
+}
+
+#update-product .img-container {
+  width: 200px;
+  height: 200px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid var(--primary-light);
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 100px;
+  background-color: var(--light-bg);
+}
+
+#update-product .img-container:hover {
+  border-color: var(--primary);
+  transform: scale(1.02);
+}
+
+#update-product .image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  #update-product {
+    padding: 15px;
+    margin: 10px;
+  }
+
+  #update-product .img-container {
+    width: 150px;
+    height: 150px;
+    margin-bottom: 20px;
+  }
+
+  #update-product .products-title {
+    font-size: 24px;
+  }
+
+  #update-product form > div {
+    flex-direction: column;
+  }
+}

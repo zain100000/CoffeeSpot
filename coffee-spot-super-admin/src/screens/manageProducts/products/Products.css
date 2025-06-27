@@ -1,0 +1,217 @@
+@import url("../../../styles/globalStyles.css");
+
+/* ------------------------------ PRODUCT SCREEN CSS --------------------------------- */
+/* ----------------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------------- */
+
+#products .products-container {
+  padding: 28px;
+  background: var(--white);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+#products .products-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+#products .products-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0;
+  padding-left: 10px;
+  border-left: 4px solid var(--primary);
+}
+
+#products .products-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+#products .loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+#products .products-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+#products .products-table thead {
+  background-color: var(--primary);
+  color: var(--white);
+}
+
+#products .products-table th {
+  padding: 16px;
+  text-align: left;
+  font-weight: 600;
+}
+
+#products .products-table td {
+  padding: 10px;
+  border-bottom: 1px solid var(--light-gray);
+  margin-top: 20px;
+}
+
+#products .products-table tr:last-child td {
+  border-bottom: none;
+}
+
+#products .products-table tr:hover {
+  background-color: var(--light-bg);
+}
+
+#products .product-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#products .product-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--light-gray);
+}
+
+#products .product-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+#products .product-description {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+#products .stock-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+#products .stock-badge.in-stock {
+  background-color: var(--success-light);
+  color: var(--success-dark);
+}
+
+#products .stock-badge.low-stock {
+  background-color: var(--warning-light);
+  color: var(--warning-dark);
+}
+
+#products .stock-badge.out-of-stock {
+  background-color: var(--danger-light);
+  color: var(--danger-dark);
+}
+
+#products .actions {
+  display: flex;
+  position: absolute;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+}
+
+#products .action-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#products .action-btn:hover {
+  transform: scale(1.1);
+}
+
+#products .view-btn {
+  color: var(--primary);
+}
+
+#products .edit-btn {
+  background-color: var(--primary-light);
+  color: var(--info-dark);
+}
+
+#products .delete-btn {
+  background-color: var(--primary-light);
+  color: var(--error);
+}
+
+#products .no-products-found {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 24px;
+  background-color: var(--tertiary);
+  border-radius: 10px;
+  margin-top: 20px;
+  box-shadow: 0 2px 6px rgba(198, 40, 40, 0.1);
+}
+
+#products .no-products-found i {
+  font-size: 30px;
+  color: var(--light-gray);
+}
+
+#products .no-products-found p {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  #products .products-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  #products .products-actions {
+    width: 100%;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  #products .products-table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  #products .product-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  #products .actions {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
