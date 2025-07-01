@@ -106,7 +106,7 @@ exports.updateProduct = async (req, res) => {
     }
 
     const { id } = req.params;
-    const updates = req.body;
+    const { addedBy, ...updates } = req.body; // Exclude addedBy from updates
 
     // Find the product by ID
     const product = await Product.findById(id);
@@ -127,7 +127,7 @@ exports.updateProduct = async (req, res) => {
     }
 
     // Update the product with the new data
-    const updatedProdct = await Product.findByIdAndUpdate(id, updates, {
+    const updatedProduct = await Product.findByIdAndUpdate(id, updates, {
       new: true, // Return the updated document
     });
 
@@ -135,7 +135,7 @@ exports.updateProduct = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "Product updated successfully",
-      product: updatedProdct,
+      product: updatedProduct,
     });
   } catch (error) {
     console.error("Error updating product:", error);

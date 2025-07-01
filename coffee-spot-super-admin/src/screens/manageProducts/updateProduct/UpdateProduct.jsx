@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Button from "../../../utils/customButton/Button";
 import InputField from "../../../utils/customInputField/InputField";
 import { useDispatch } from "react-redux";
@@ -10,6 +10,7 @@ import "./UpdateProduct.css";
 const UpdateProduct = () => {
   const location = useLocation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const originalProduct = location.state?.product || {};
   const [product, setProduct] = useState(originalProduct);
   const [loading, setLoading] = useState(false);
@@ -42,9 +43,15 @@ const UpdateProduct = () => {
     setLoading(true);
     try {
       const formData = new FormData();
-      Object.entries(product).forEach(([key, val]) => {
-        formData.append(key, val);
-      });
+      // Only append fields that should be updated
+      formData.append("title", product.title);
+      formData.append("description", product.description);
+      formData.append("price", product.price);
+      formData.append("category", product.category);
+      formData.append("stock", product.stock);
+      if (product.productImage instanceof File) {
+        formData.append("productImage", product.productImage);
+      }
 
       const resultAction = await dispatch(
         updateProduct({ productId: product._id, formData })
@@ -52,6 +59,9 @@ const UpdateProduct = () => {
 
       if (updateProduct.fulfilled.match(resultAction)) {
         toast.success("Product updated successfully");
+        setTimeout(() => {
+          navigate("/admin/products/manage-products");
+        }, 1000);
       } else {
         toast.error("Failed to update product");
       }

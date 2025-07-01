@@ -38,7 +38,6 @@ const productSchema = new mongoose.Schema(
     addedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "SuperAdmin",
-      required: true,
     },
   },
   { timestamps: true }
