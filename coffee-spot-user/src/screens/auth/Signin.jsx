@@ -21,9 +21,12 @@ import Button from '../../utils/customComponents/customButton/Button';
 import {useDispatch} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import {
+  isValidInput,
   validatePassword,
   validatePhone,
 } from '../../utils/customValidations/Validations';
+import Toast from 'react-native-toast-message';
+import { loginUser } from '../../redux/slices/authSlice';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -56,6 +59,46 @@ const Signin = () => {
   const handlePasswordChange = value => {
     setPassword(value);
     setPasswordError(validatePassword(value));
+  };
+
+  const handleLogin = async () => {
+    if (!isValidInput(phone, password)) return;
+
+    setLoading(true);
+
+    try {
+      const resultAction = await dispatch(loginUser({phone, password}));
+
+      if (loginUser.fulfilled.match(resultAction)) {
+        Toast.show({
+          type: 'success',
+          text1: 'Login Successfully!',
+          text1: 'User Logged In!',
+        });
+
+        setPhone('');
+        setPassword('');
+
+        setTimeout(() => {
+          navigation.replace('Main');
+        }, 3000);
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Login Failed!',
+          text2: 'Invalid Credentials',
+        });
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      Toast.show({
+        type: 'error',
+        text1: 'Unexpected Error!',
+        text2: 'Please try again later',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -141,6 +184,7 @@ const Signin = () => {
             style={styles.btnContainer}>
             <Button
               title="SIGN IN"
+              onPress={handleLogin}
               width={width * 0.95}
               loading={loading}
               disabled={!isButtonEnabled}
@@ -199,6 +243,7 @@ const styles = StyleSheet.create({
     textAlign: 'justify',
     marginBottom: height * 0.01,
     color: theme.colors.dark,
+    left: width * 0.02
   },
 
   description: {
@@ -207,6 +252,7 @@ const styles = StyleSheet.create({
     textAlign: 'justify',
     marginBottom: height * 0.02,
     color: theme.colors.dark,
+    left: width * 0.02
   },
 
   btnContainer: {

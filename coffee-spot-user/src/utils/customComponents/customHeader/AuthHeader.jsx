@@ -23,9 +23,9 @@ const styles = StyleSheet.create({
   },
 
   logo: {
-    width: width * 0.24,
+    width: width * 0.2,
     height: height * 0.08,
-    marginRight: width * 0.04,
+    marginRight: width * 0.036,
   },
 
   authText: {

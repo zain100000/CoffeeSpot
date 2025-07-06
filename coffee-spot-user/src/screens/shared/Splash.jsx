@@ -43,7 +43,7 @@ const Splash = () => {
         await new Promise(resolve => setTimeout(resolve, 3500)); // Wait for animations to complete
         const token = await AsyncStorage.getItem('authToken');
         if (token) {
-          navigation.reset({index: 0, routes: [{name: 'Home'}]});
+          navigation.reset({index: 0, routes: [{name: 'Main'}]});
         } else {
           navigation.reset({index: 0, routes: [{name: 'OnBoard'}]});
         }

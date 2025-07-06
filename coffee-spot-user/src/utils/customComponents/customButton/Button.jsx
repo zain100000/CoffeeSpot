@@ -27,7 +27,7 @@ const Button = ({
             backgroundColor: disabled ? theme.colors.gray : backgroundColor,
           },
         ]}
-        activeOpacity={disabled ? 1 : 0.7}>
+        activeOpacity={disabled ? 1 : 0.9}>
         {loading ? (
           <ActivityIndicator color={textColor} size={width * 0.06} />
         ) : (

@@ -40,12 +40,26 @@ export const validatePhone = phone => {
   return '';
 };
 
+export const validateAddress = address => {
+  const addressPattern =
+    /^\s*House#\s*\d+\s*,\s*Street#\s*\d+\s*,\s*[A-Za-z]+[A-Za-z\s]*\s*,\s*[A-Za-z]+[A-Za-z\s]*\s*,\s*[A-Za-z]+[A-Za-z\s]*\s*$/i;
+
+  if (!address) {
+    return 'Address is required';
+  }
+  if (!addressPattern.test(address)) {
+    return 'House#, Street#, Area, City, Landmark';
+  }
+  return '';
+};
+
 export const validateFields = fields => {
   const validationFunctions = {
     email: validateEmail,
     password: validatePassword,
     fullName: validateName,
     phone: validatePhone,
+    address: validateAddress,
   };
 
   const errors = {};

@@ -8,7 +8,6 @@ import {
   Animated,
   Easing,
   StatusBar,
-  Text,
 } from 'react-native';
 import AppIntroSlider from 'react-native-app-intro-slider';
 import {useNavigation} from '@react-navigation/native';
@@ -91,7 +90,7 @@ const OnBoarding = () => {
     if (sliderRef.current && activeIndex < slides.length - 1) {
       const newIndex = activeIndex + 1;
       sliderRef.current.goToSlide(newIndex);
-      handleSlideChange(newIndex); // manually update active index and animation
+      handleSlideChange(newIndex);
     } else {
       handleOnComplete();
     }
@@ -184,7 +183,7 @@ const OnBoarding = () => {
 
         <Button
           title={index === slides.length - 1 ? 'Get Started' : 'Next'}
-          width={width * 0.4}
+          width={width * 0.44}
           onPress={
             index === slides.length - 1 ? handleOnComplete : goToNextSlide
           }

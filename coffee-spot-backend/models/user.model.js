@@ -24,11 +24,8 @@ const userSchema = new mongoose.Schema(
     },
 
     address: {
-      houseNumber: { type: String },
-      streetNumber: { type: String },
-      colony: { type: String },
-      landmark: { type: String },
-      city: { type: String },
+      type: String,
+      required: true,
     },
 
     phone: {

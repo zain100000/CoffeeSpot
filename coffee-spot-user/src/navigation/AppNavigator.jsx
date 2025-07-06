@@ -9,6 +9,10 @@ import OnBoarding from '../screens/shared/OnBoarding';
 
 /* Auth Imports */
 import Signin from '../screens/auth/Signin';
+import Signup from '../screens/auth/Signup';
+
+// Home Imports
+import BottomNavigator from './bottomNavigator/BottomNavigator';
 
 const Stack = createNativeStackNavigator();
 
@@ -35,6 +39,15 @@ const AppNavigator = () => {
         {/* Auth Routes */}
         <Stack.Screen name="Signin">
           {props => <Signin {...props} setStatusBarColor={setStatusBarColor} />}
+        </Stack.Screen>
+
+        <Stack.Screen name="Signup">
+          {props => <Signup {...props} setStatusBarColor={setStatusBarColor} />}
+        </Stack.Screen>
+
+        {/* Home Routes */}
+        <Stack.Screen name="Main">
+          {props => <BottomNavigator {...props} setStatusBarColor={setStatusBarColor} />}
         </Stack.Screen>
       </Stack.Navigator>
     </>

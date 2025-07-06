@@ -4,16 +4,14 @@ import {
   StyleSheet,
   Dimensions,
   Animated,
-  useColorScheme,
-  View,
 } from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import LinearGradient from 'react-native-linear-gradient';
 import {theme} from '../../styles/theme';
 
-import Home from    '../../screens/dashBoard/Home';
-import Menu from    '../../screens/menuModule/Menu';
-import Cart from    '../../screens/cartModule/Cart';
+import Home from '../../screens/dashBoard/Home';
+import Menu from '../../screens/menuModule/Menu';
+import Cart from '../../screens/cartModule/Cart';
 import Profile from '../../screens/profileModule/Profile';
 
 const Tab = createBottomTabNavigator();
@@ -55,8 +53,6 @@ const AnimatedTabIcon = ({focused, source}) => {
 
 // ✅ Tab Navigator
 const BottomNavigator = () => {
-  const colorScheme = useColorScheme();
-
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -69,7 +65,7 @@ const BottomNavigator = () => {
         tabBarStyle: [
           styles.tabBar,
           {
-            backgroundColor: theme.colors.white,
+            backgroundColor: theme.colors.tertiary,
             ...theme.elevation.depth3,
           },
         ],
@@ -78,7 +74,7 @@ const BottomNavigator = () => {
         name="Home"
         component={Home}
         options={{
-          tabBarLabel: 'Home',
+          tabBarLabel: '',
           tabBarIcon: ({focused}) => (
             <AnimatedTabIcon
               focused={focused}
@@ -95,7 +91,7 @@ const BottomNavigator = () => {
         name="Categories"
         component={Menu}
         options={{
-          tabBarLabel: 'Categories',
+          tabBarLabel: '',
           tabBarIcon: ({focused}) => (
             <AnimatedTabIcon
               focused={focused}
@@ -112,7 +108,7 @@ const BottomNavigator = () => {
         name="Cart"
         component={Cart}
         options={{
-          tabBarLabel: 'Cart',
+          tabBarLabel: '',
           tabBarIcon: ({focused}) => (
             <AnimatedTabIcon
               focused={focused}
@@ -129,7 +125,7 @@ const BottomNavigator = () => {
         name="Profile"
         component={Profile}
         options={{
-          tabBarLabel: 'Profile',
+          tabBarLabel: '',
           tabBarIcon: ({focused}) => (
             <AnimatedTabIcon
               focused={focused}
@@ -156,13 +152,8 @@ const styles = StyleSheet.create({
     height: height * 0.085,
     paddingTop: height * 0.02,
     borderTopWidth: 0,
-    borderRadius: theme.borderRadius.large,
-  },
-
-  tabBarLabel: {
-    fontSize: theme.typography.fontSize.sm,
-    fontFamily: theme.typography.poppins.semiBold,
-    marginBottom: height * 0.008,
+    borderTopLeftRadius: theme.borderRadius.large,
+    borderTopRightRadius: theme.borderRadius.large,
   },
 
   iconWrapper: {

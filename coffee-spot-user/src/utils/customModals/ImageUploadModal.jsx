@@ -13,7 +13,7 @@ import uploadAnimation from '../../assets/animations/image.json';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ImagePicker from 'react-native-image-crop-picker';
 import {theme} from '../../styles/theme';
-import CustomModal from './CustomModal';
+import Toast from 'react-native-toast-message';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -45,10 +45,11 @@ const ImageUploadModal = ({
       handleImageSelection(image);
     } catch (error) {
       console.error(error);
-      setShowErrorModal(true);
-      setTimeout(() => {
-        setShowErrorModal(false);
-      }, 3000);
+      Toast.show({
+        type: 'error',
+        text1: 'Image Selection Failed',
+        text2: 'Something went wrong while picking the image.',
+      });
     }
   };
 
@@ -63,10 +64,11 @@ const ImageUploadModal = ({
       handleImageSelection(image);
     } catch (error) {
       console.error(error);
-      setShowErrorModal(true);
-      setTimeout(() => {
-        setShowErrorModal(false);
-      }, 3000);
+      Toast.show({
+        type: 'error',
+        text1: 'Camera Error',
+        text2: 'Something went wrong while opening the camera.',
+      });
     }
   };
 
@@ -124,22 +126,6 @@ const ImageUploadModal = ({
           </View>
         </View>
       </View>
-
-      <CustomModal
-        visible={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
-        animationSource={require('../../assets/animations/success.json')}
-        title="Success!"
-        description="Image selected successfully!"
-      />
-
-      <CustomModal
-        visible={showErrorModal}
-        onClose={() => setShowErrorModal(false)}
-        animationSource={require('../../assets/animations/error.json')}
-        title="Upload Failed"
-        description="There was an error during the image selection!"
-      />
     </Modal>
   );
 };
