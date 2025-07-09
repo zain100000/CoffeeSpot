@@ -73,7 +73,7 @@ const Signin = () => {
         Toast.show({
           type: 'success',
           text1: 'Login Successfully!',
-          text1: 'User Logged In!',
+          text2: 'User Logged In!',
         });
 
         setPhone('');

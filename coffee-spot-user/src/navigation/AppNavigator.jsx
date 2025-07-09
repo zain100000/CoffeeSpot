@@ -13,6 +13,7 @@ import Signup from '../screens/auth/Signup';
 
 // Home Imports
 import BottomNavigator from './bottomNavigator/BottomNavigator';
+import CoffeeCategory from '../screens/dashBoard/coffeeCategoryScreens/CoffeeCategory';
 
 const Stack = createNativeStackNavigator();
 
@@ -47,7 +48,15 @@ const AppNavigator = () => {
 
         {/* Home Routes */}
         <Stack.Screen name="Main">
-          {props => <BottomNavigator {...props} setStatusBarColor={setStatusBarColor} />}
+          {props => (
+            <BottomNavigator {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+
+        <Stack.Screen name="CategoryProducts">
+          {props => (
+            <CoffeeCategory {...props} setStatusBarColor={setStatusBarColor} />
+          )}
         </Stack.Screen>
       </Stack.Navigator>
     </>

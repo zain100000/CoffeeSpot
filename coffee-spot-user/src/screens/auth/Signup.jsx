@@ -30,8 +30,6 @@ import {
   validatePassword,
   validateAddress,
 } from '../../utils/customValidations/Validations';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import moment from 'moment';
 import ImageUploadModal from '../../utils/customModals/ImageUploadModal';
 import Logo from '../../assets/splashScreen/splash-logo.png';
 import {registerUser, sendOTP, verifyOTP} from '../../redux/slices/authSlice';
@@ -809,7 +807,7 @@ const styles = StyleSheet.create({
 
   stepCircle: {
     width: width * 0.09,
-    height: height * 0.038,
+    height: height * 0.042,
     borderRadius: theme.borderRadius.circle,
     justifyContent: 'center',
     alignItems: 'center',
@@ -834,12 +832,11 @@ const styles = StyleSheet.create({
   },
 
   stepLabelText: {
-    fontSize: width * 0.044,
+    fontSize: width * 0.04,
     fontFamily: theme.typography.poppins.regular,
-    textAlign: 'justify',
     marginBottom: height * 0.02,
     color: theme.colors.dark,
-    left: width * 0.01,
+    alignSelf: 'center',
   },
 
   otpContainer: {

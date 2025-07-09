@@ -16,11 +16,12 @@ const {width, height} = Dimensions.get('screen');
 const Header = ({
   title,
   logo,
+  leftIcon,
+  onPressLeft,
   rightIcon,
   onPressRight,
   profile,
   onPressProfile,
-  isOnline,
 }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.95)).current;
@@ -54,7 +55,18 @@ const Header = ({
         start={{x: 0, y: 0}}
         end={{x: 1, y: 1}}
         style={styles.gradientBackground}>
-        <View style={styles.logoContainer}>
+        <View style={styles.leftGroup}>
+          {leftIcon && (
+            <TouchableOpacity onPress={onPressLeft} activeOpacity={0.8}>
+              <Image
+                source={leftIcon}
+                style={[styles.icon, {tintColor: theme.colors.white}]}
+              />
+            </TouchableOpacity>
+          )}
+        </View>
+
+        <View style={styles.logoTitleGroup}>
           {logo && <Image source={logo} style={styles.logo} />}
           <Text style={[styles.title, {color: theme.colors.white}]}>
             {title}
@@ -75,16 +87,6 @@ const Header = ({
             <TouchableOpacity onPress={onPressProfile} activeOpacity={0.8}>
               <View style={styles.profileWrapper}>
                 <Image source={profile} style={styles.profile} />
-                <View
-                  style={[
-                    styles.onlineIndicator,
-                    {
-                      backgroundColor: isOnline
-                        ? theme.colors.success
-                        : theme.colors.disabled,
-                    },
-                  ]}
-                />
               </View>
             </TouchableOpacity>
           )}
@@ -106,30 +108,42 @@ const styles = StyleSheet.create({
   },
 
   gradientBackground: {
-    width: '100%',
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: width * 0.05,
     paddingVertical: height * 0.018,
   },
 
-  logoContainer: {
+  leftGroup: {
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
+    gap: width * 0.03,
   },
 
-  logo: {
-    width: width * 0.1,
-    height: width * 0.1,
-    resizeMode: 'contain',
+  logoTitleGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: width * 0.025,
+    flex: 1,
+    marginLeft: width * 0.04,
   },
 
   rightGroup: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: width * 0.03,
+  },
+
+  logo: {
+    width: width * 0.08,
+    height: width * 0.08,
+    resizeMode: 'contain',
+  },
+
+  title: {
+    fontSize: theme.typography.fontSize.lg,
+    fontFamily: theme.typography.dancingScript.semiBold,
   },
 
   icon: {
@@ -143,16 +157,9 @@ const styles = StyleSheet.create({
   },
 
   profile: {
-    width: width * 0.12,
-    height: width * 0.12,
+    width: width * 0.1,
+    height: width * 0.1,
     resizeMode: 'cover',
     borderRadius: theme.borderRadius.circle,
-    marginLeft: width * 0.02,
-  },
-
-  title: {
-    fontSize: theme.typography.fontSize.lg,
-    fontFamily: theme.typography.dancingScript.semiBold,
-    textAlign: 'center',
   },
 });

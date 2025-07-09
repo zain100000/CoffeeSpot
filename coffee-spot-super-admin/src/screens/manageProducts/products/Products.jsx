@@ -39,10 +39,17 @@ const Products = () => {
   }, [dispatch, user?.id]);
 
   const filteredProducts = (Array.isArray(products) ? products : []).filter(
-    (product) =>
-      product.title &&
-      product.title.toLowerCase().includes(search.toLowerCase())
-  );
+  (product) =>
+    product.title &&
+    Array.isArray(product.category) &&
+    (
+      product.title.toLowerCase().includes(search.toLowerCase()) ||
+      product.category.some(cat =>
+        cat.toLowerCase().includes(search.toLowerCase())
+      )
+    )
+);
+
 
   const handleSearch = (e) => setSearch(e.target.value);
 

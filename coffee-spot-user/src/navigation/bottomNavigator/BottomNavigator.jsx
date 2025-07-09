@@ -1,10 +1,5 @@
 import React, {useEffect, useRef} from 'react';
-import {
-  Image,
-  StyleSheet,
-  Dimensions,
-  Animated,
-} from 'react-native';
+import {Image, StyleSheet, Dimensions, Animated} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import LinearGradient from 'react-native-linear-gradient';
 import {theme} from '../../styles/theme';
@@ -44,7 +39,7 @@ const AnimatedTabIcon = ({focused, source}) => {
         source={source}
         style={[
           styles.icon,
-          {tintColor: focused ? theme.colors.primary : theme.colors.gray},
+          {tintColor: focused ? theme.colors.primary : theme.colors.white},
         ]}
       />
     </Animated.View>
@@ -60,7 +55,7 @@ const BottomNavigator = () => {
         headerShown: false,
         tabBarShowLabel: true,
         tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.colors.gray,
+        tabBarInactiveTintColor: theme.colors.white,
         tabBarLabelStyle: styles.tabBarLabel,
         tabBarStyle: [
           styles.tabBar,
