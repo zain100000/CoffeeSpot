@@ -86,6 +86,7 @@ const Home = () => {
     if (hour < 12) newGreeting = 'Good Morning';
     else if (hour < 17) newGreeting = 'Good Afternoon';
     else if (hour < 20) newGreeting = 'Good Evening';
+    else if (hour < 24) newGreeting = 'Good Evening';
     setGreeting(newGreeting);
   };
 

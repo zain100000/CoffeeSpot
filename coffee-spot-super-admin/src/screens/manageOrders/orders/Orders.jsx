@@ -20,7 +20,7 @@ const Orders = () => {
   const user = useSelector((state) => state.auth.user);
   const orders = useSelector((state) => state.orders.orders);
 
-  console.log("ORDERS", orders)
+  console.log("ORDERS", orders);
 
   const [search, setSearch] = useState("");
   const [selectedOrder, setSelectedOrder] = useState(false);

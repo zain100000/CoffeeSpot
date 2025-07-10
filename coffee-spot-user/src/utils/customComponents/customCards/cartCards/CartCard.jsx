@@ -25,8 +25,6 @@ const CartCard = ({
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
 
-  const formattedPrice = price ? price.toFixed(2) : '0.00';
-
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
@@ -67,7 +65,7 @@ const CartCard = ({
           {title}
         </Text>
 
-        <Text style={styles.price}>${formattedPrice}</Text>
+        <Text style={styles.price}>PKR{price}</Text>
 
         <View style={styles.quantityContainer}>
           <TouchableOpacity
@@ -128,7 +126,7 @@ const styles = StyleSheet.create({
   },
 
   imageContainer: {
-    width: width * 0.22,
+    width: width * 0.34,
     height: width * 0.3,
     borderRadius: theme.borderRadius.medium,
     backgroundColor: theme.colors.lightGray,
@@ -154,22 +152,18 @@ const styles = StyleSheet.create({
   detailsContainer: {
     flex: 1,
     justifyContent: 'space-between',
+    gap: theme.gap(1),
   },
 
   title: {
     fontSize: theme.typography.fontSize.md,
-    fontFamily: theme.typography.fontFamilySemiBold,
+    fontFamily: theme.typography.poppins.semiBold,
     color: theme.colors.dark,
-    marginBottom: height * 0.01,
-  },
-
-  priceContainer: {
-    marginBottom: height * 0.01,
   },
 
   price: {
     fontSize: theme.typography.fontSize.md,
-    fontFamily: theme.typography.fontFamilyBold,
+    fontFamily: theme.typography.poppins.semiBold,
     color: theme.colors.primary,
   },
 

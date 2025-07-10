@@ -11,6 +11,8 @@ const OrderDetails = () => {
 
   console.log("ORDERS", order);
 
+  console.log("ORDERS", order);
+
   useEffect(() => {
     setTimeout(() => {
       setOrder(location.state?.order || null);
@@ -90,6 +92,15 @@ const OrderDetails = () => {
             </div>
 
             <div className="detail-row">
+              <div className="detail-label">Payment Method</div>
+              <div className="detail-value">
+                <span className={`status-badge ${order.payment.toLowerCase()}`}>
+                  {order.paymentMethod}
+                </span>
+              </div>
+            </div>
+
+            <div className="detail-row">
               <div className="detail-label">Customer</div>
               <div className="detail-value">{order.userId?.userName}</div>
               <div className="detail-label">Customer Email</div>
@@ -113,6 +124,7 @@ const OrderDetails = () => {
             <div className="header-cell">Product</div>
             <div className="header-cell">Quantity</div>
             <div className="header-cell">Unit Price</div>
+            <div className="header-cell">Shipping Fee</div>
             <div className="header-cell">Total Price</div>
           </div>
 
@@ -121,9 +133,8 @@ const OrderDetails = () => {
               <div className="item-cell">{item.productId?.title}</div>
               <div className="item-cell">{item.quantity}</div>
               <div className="item-cell">PKR{item.productId?.price}</div>
-              <div className="item-cell">
-                PKR{(item.productId?.price * item.quantity)}
-              </div>
+              <div className="item-cell">PKR{order.shippingFee}</div>
+              <div className="item-cell">PKR {order.totalAmount}</div>
             </div>
           ))}
         </div>

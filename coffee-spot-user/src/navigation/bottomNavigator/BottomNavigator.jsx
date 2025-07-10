@@ -9,11 +9,13 @@ import Menu from '../../screens/menuModule/Menu';
 import Cart from '../../screens/cartModule/Cart';
 import Profile from '../../screens/profileModule/Profile';
 
+import {useSelector} from 'react-redux';
+
 const Tab = createBottomTabNavigator();
 const {width, height} = Dimensions.get('screen');
 
 // ✅ Animated Icon with Glow
-const AnimatedTabIcon = ({focused, source}) => {
+const AnimatedTabIcon = ({focused, source, badgeCount = 0}) => {
   const scaleValue = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -42,12 +44,25 @@ const AnimatedTabIcon = ({focused, source}) => {
           {tintColor: focused ? theme.colors.primary : theme.colors.white},
         ]}
       />
+      {badgeCount > 0 && (
+        <Animated.View style={styles.badge}>
+          <Animated.Text style={styles.badgeText}>
+            {badgeCount > 99 ? '99+' : badgeCount}
+          </Animated.Text>
+        </Animated.View>
+      )}
     </Animated.View>
   );
 };
 
 // ✅ Tab Navigator
 const BottomNavigator = () => {
+  const {cartItems} = useSelector(state => state.cart);
+  const cartCount =
+    cartItems?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+
+  console.log(cartItems);
+
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -107,6 +122,7 @@ const BottomNavigator = () => {
           tabBarIcon: ({focused}) => (
             <AnimatedTabIcon
               focused={focused}
+              badgeCount={cartCount}
               source={
                 focused
                   ? require('../../assets/navigatorIcons/cart-filled.png')
@@ -116,6 +132,7 @@ const BottomNavigator = () => {
           ),
         }}
       />
+
       <Tab.Screen
         name="Profile"
         component={Profile}
@@ -171,5 +188,28 @@ const styles = StyleSheet.create({
     borderRadius: theme.borderRadius.circle,
     opacity: 0.35,
     zIndex: 1,
+  },
+
+  badge: {
+    position: 'absolute',
+    right: -width * 0.02,
+    top: -height * 0.01,
+    backgroundColor: theme.colors.error,
+    minWidth: width * 0.05,
+    height: width * 0.05,
+    borderRadius: width * 0.025,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 20,
+    borderWidth: 1.5,
+    borderColor: theme.colors.tertiary,
+  },
+
+  badgeText: {
+    color: theme.colors.white,
+    fontSize: 10,
+    fontFamily: theme.typography.poppins.bold,
+    includeFontPadding: false,
+    textAlign: 'center',
   },
 });

@@ -29,8 +29,11 @@ const CoffeeCategory = () => {
   const [filteredProducts, setFilteredProducts] = useState(products);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.95)).current;
+  const noProductFadeAnim = useRef(new Animated.Value(0)).current;
+  const noProductBounceAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -47,6 +50,11 @@ const CoffeeCategory = () => {
           useNativeDriver: true,
         }),
       ]).start();
+
+      // Start no product animation if no products
+      if (products.length === 0) {
+        startNoProductAnimation();
+      }
     }, 1000);
 
     return () => clearTimeout(timeout);
@@ -63,8 +71,41 @@ const CoffeeCategory = () => {
         )
         .filter(row => row.length > 0);
       setFilteredProducts(filtered);
+
+      // Start animation when search results are empty
+      if (filtered.length === 0) {
+        startNoProductAnimation();
+      }
     }
   }, [searchQuery, products]);
+
+  const startNoProductAnimation = () => {
+    Animated.parallel([
+      Animated.timing(noProductFadeAnim, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      }),
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(noProductBounceAnim, {
+            toValue: 10,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(noProductBounceAnim, {
+            toValue: 0,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+        ]),
+      ),
+    ]).start();
+  };
+
+  const handleProductPress = product => {
+    navigation.navigate('ProductDetail', {product});
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -115,20 +156,28 @@ const CoffeeCategory = () => {
                       price={product.price}
                       cardStyle={styles.card}
                       titleStyle={styles.cardTitle}
+                      onPress={() => handleProductPress(product)}
                     />
                   </View>
                 ))}
               </View>
             ))
           ) : (
-            <View style={styles.noProductView}>
+            <Animated.View
+              style={[
+                styles.noProductView,
+                {
+                  opacity: noProductFadeAnim,
+                  transform: [{translateY: noProductBounceAnim}],
+                },
+              ]}>
               <FontAwesome6
                 name={'box-open'}
-                size={width * 0.14}
-                color={theme.colors.tertiary}
+                size={width * 0.28}
+                color={theme.colors.primary}
               />
               <Text style={styles.noProductTitle}>No Product Found!</Text>
-            </View>
+            </Animated.View>
           )}
         </ScrollView>
       )}
@@ -157,6 +206,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     paddingHorizontal: width * 0.045,
     paddingBottom: height * 0.1,
+    flexGrow: 1,
   },
 
   row: {
@@ -193,15 +243,15 @@ const styles = StyleSheet.create({
   },
 
   noProductView: {
-    marginTop: height * 0.15,
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     gap: theme.gap(2),
   },
 
   noProductTitle: {
-    fontSize: theme.typography.fontSize.lg,
+    fontSize: theme.typography.fontSize.xl,
     fontFamily: theme.typography.poppins.semiBold,
-    color: theme.colors.tertiary,
+    color: theme.colors.primary,
   },
 });

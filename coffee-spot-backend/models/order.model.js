@@ -40,6 +40,16 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
 
+    shippingFee: {
+      type: String,
+      required: true,
+    },
+
+    paymentMethod: {
+      type: String,
+      required: true,
+    },
+
     // Total order amount
     totalAmount: {
       type: Number,

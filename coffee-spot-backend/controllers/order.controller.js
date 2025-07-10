@@ -5,7 +5,8 @@ const Product = require("../models/product.model");
 // Place new order
 exports.placeOrder = async (req, res) => {
   try {
-    const { items, shippingAddress, totalAmount } = req.body;
+    const { items, shippingAddress, shippingFee, paymentMethod, totalAmount } =
+      req.body;
     const userId = req.user.id;
 
     if (!items?.length) {
@@ -15,15 +16,16 @@ exports.placeOrder = async (req, res) => {
       });
     }
 
-    if (!shippingAddress || !totalAmount) {
+    if (!shippingAddress || !shippingFee || !paymentMethod || !totalAmount) {
       return res.status(400).json({
         success: false,
-        message: "Shipping address and total amount are required",
+        message:
+          "Shipping address, shipping fee, payment method, and total amount are required",
       });
     }
 
-    // Validate stock and calculate total amount
-    let calculatedTotal = 0;
+    // Validate stock and calculate subtotal
+    let calculatedSubtotal = 0;
     for (const item of items) {
       const product = await Product.findById(item.productId);
       if (!product) {
@@ -32,16 +34,21 @@ exports.placeOrder = async (req, res) => {
           message: `Product ${item.productId} not found`,
         });
       }
+
       if (product.stock < item.quantity) {
         return res.status(400).json({
           success: false,
           message: `Insufficient stock for ${product.title}`,
         });
       }
-      calculatedTotal += product.price * item.quantity;
+
+      calculatedSubtotal += product.price * item.quantity;
       product.stock -= item.quantity;
       await product.save();
     }
+
+    const numericShippingFee = parseFloat(shippingFee);
+    const calculatedTotal = calculatedSubtotal + numericShippingFee;
 
     if (calculatedTotal !== totalAmount) {
       return res.status(400).json({
@@ -54,19 +61,18 @@ exports.placeOrder = async (req, res) => {
       userId,
       items,
       shippingAddress,
+      shippingFee: shippingFee.toString(),
+      paymentMethod,
       totalAmount,
       status: "PENDING",
       payment: "PENDING",
     });
-    await order.save();
 
-    await User.findByIdAndUpdate(userId, {
-      $push: { orders: { orderId: order._id } },
-    });
+    await order.save();
 
     res.status(201).json({
       success: true,
-      message: "Order place successfully",
+      message: "Order placed successfully",
       order,
     });
   } catch (error) {
@@ -91,10 +97,7 @@ exports.getAllOrders = async (req, res) => {
     } else {
       const user = await User.findById(id).populate({
         path: "orders.orderId",
-        populate: [
-          { path: "userId"},
-          { path: "items.productId"},
-        ],
+        populate: [{ path: "userId" }, { path: "items.productId" }],
       });
       orders = user.orders.map((o) => o.orderId);
     }

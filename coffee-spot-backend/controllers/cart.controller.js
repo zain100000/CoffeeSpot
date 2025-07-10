@@ -175,7 +175,7 @@ exports.getCart = async (req, res) => {
   try {
     const cart = await Cart.find({ userId: req.user.id })
       .populate("productId")
-      .populate("userId", "name email");
+      .populate("userId");
 
     res.status(201).json({
       success: true,
