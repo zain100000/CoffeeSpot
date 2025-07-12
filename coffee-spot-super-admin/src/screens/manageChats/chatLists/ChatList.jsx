@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../../../styles/globalStyles.css";
 import "./ChatList.css";
+import "../../../styles/globalStyles.css";
 import InputField from "../../../utils/customInputField/InputField";
 import Loader from "../../../utils/customLoader/Loader";
 import { ChatEvents } from "../../../utils/socket/ChatEventHooks/ChatEventHooks";

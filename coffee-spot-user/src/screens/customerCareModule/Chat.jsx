@@ -3,110 +3,151 @@ import {
   View,
   Text,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   FlatList,
-  ActivityIndicator,
+  Animated,
+  Easing,
+  Dimensions,
 } from 'react-native';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import LinearGradient from 'react-native-linear-gradient';
+import Feather from 'react-native-vector-icons/Feather';
+import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
+
 import {theme} from '../../styles/theme';
 import socketManager from '../../utils/customSocket/SocketManager';
 import * as socketActions from '../../utils/customSocket/socketActions/SocketActions';
+import Header from '../../utils/customComponents/customHeader/Header';
+import LeftIcon from '../../assets/icons/chevron-left.png';
+import {globalStyles} from '../../styles/globalStyles';
+import InputField from '../../utils/customComponents/customInputField/InputField';
+import Loader from '../../utils/customComponents/customLoader/Loader';
 
-const Chat = ({route}) => {
+const {width, height} = Dimensions.get('screen');
+
+const Chat = () => {
+  const route = useRoute();
+  const navigation = useNavigation();
   const {userId} = route.params;
+
   const [messages, setMessages] = useState([]);
   const [messageText, setMessageText] = useState('');
   const [currentChatId, setCurrentChatId] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
   const socketRef = useRef(null);
 
-  // Handle new chat creation
+  // Animation values
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const bounceAnim = useRef(new Animated.Value(0)).current;
+
+  // Animate "No messages" view when empty
+  useEffect(() => {
+    if (!isLoading && messages.length === 0) {
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 800,
+          easing: Easing.out(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(bounceAnim, {
+              toValue: -10,
+              duration: 500,
+              easing: Easing.inOut(Easing.quad),
+              useNativeDriver: true,
+            }),
+            Animated.timing(bounceAnim, {
+              toValue: 0,
+              duration: 500,
+              easing: Easing.inOut(Easing.quad),
+              useNativeDriver: true,
+            }),
+          ]),
+        ),
+      ]).start();
+    } else {
+      fadeAnim.setValue(0);
+      bounceAnim.setValue(0);
+    }
+  }, [messages, isLoading]);
+
+  // Handles NEW_CHAT event
   const handleNewChat = data => {
-    console.log('NEW_CHAT event:', data);
     if (data?.chatId) {
       setCurrentChatId(data.chatId);
-      setMessages([data.initialMessage]);
+
+      const initial = data.initialMessage;
+      if (initial?.sender === 'SUPERADMIN') {
+        setMessages([initial]);
+      } else {
+        setMessages([]);
+      }
+
       setIsLoading(false);
-      // Get history for this new chat
       socketActions.getChatHistory({chatId: data.chatId});
     }
   };
 
-  // Handle incoming messages
+  // Handles NEW_MESSAGE event
   const handleNewMessage = data => {
-    console.log('NEW_MESSAGE event:', data);
     setMessages(prev => [...prev, data.message]);
   };
 
-  // Handle chat history response
+  // Handles CHAT_HISTORY event
   const handleChatHistory = data => {
-    console.log('CHAT_HISTORY event:', data);
     if (data?.messages) {
-      setMessages(data.messages);
+      const filteredMessages = data.messages.filter(
+        (msg, index) => !(index === 0 && msg.sender === 'USER'),
+      );
+      setMessages(filteredMessages);
     }
     setIsLoading(false);
   };
 
-  // Handle socket errors
-  const handleError = error => {
-    console.error('SOCKET_ERROR:', error);
-    setIsLoading(false);
-  };
+  const handleError = () => setIsLoading(false);
 
-  // Handle successful operations
   const handleSuccess = successData => {
-    console.log('SOCKET_SUCCESS:', successData);
     if (successData.data?.chatId) {
       setCurrentChatId(successData.data.chatId);
-      // Get history for existing chat
       socketActions.getChatHistory({chatId: successData.data.chatId});
     }
   };
 
   useEffect(() => {
-    console.log('Initializing chat for user:', userId);
-
     const initializeSocket = () => {
       if (!socketManager.isConnected()) {
-        console.log('Initializing socket connection...');
         socketManager.initialize();
       }
 
       socketRef.current = socketManager.socket;
 
       if (socketRef.current) {
-        console.log('Socket connected, setting up listeners...');
         setIsConnected(true);
-
-        // Setup all event listeners
         socketActions.listenToNewChat(handleNewChat);
         socketActions.listenToNewMessage(handleNewMessage);
         socketActions.listenToChatHistory(handleChatHistory);
         socketActions.listenToError(handleError);
         socketActions.listenToSuccess(handleSuccess);
-
-        // Start chat session
         startChatSession();
       } else {
-        console.error('Socket initialization failed');
         setIsLoading(false);
       }
     };
 
     const startChatSession = () => {
-      console.log('Starting chat session...');
       socketActions.startChat({
         userId,
-        initialMessage: 'Hello, I need help'
+        initialMessage: 'Hello, I need help',
       });
     };
 
     initializeSocket();
 
     return () => {
-      console.log('Cleaning up chat component...');
-      // Remove all listeners
       socketActions.removeNewChatListener();
       socketActions.removeNewMessageListener();
       socketActions.removeChatHistoryListener();
@@ -117,7 +158,6 @@ const Chat = ({route}) => {
 
   const onSendMessage = () => {
     if (messageText.trim() && currentChatId && isConnected) {
-      console.log('Sending message:', messageText);
       socketActions.sendMessage({
         chatId: currentChatId,
         text: messageText.trim(),
@@ -126,195 +166,211 @@ const Chat = ({route}) => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <View style={[styles.container, styles.loadingContainer]}>
-        <ActivityIndicator size="large" color={theme.colors.primary} />
-        <Text style={styles.loadingText}>Loading chat...</Text>
-      </View>
-    );
-  }
-
-  if (!isConnected) {
-    return (
-      <View style={[styles.container, styles.errorContainer]}>
-        <Text style={styles.errorText}>Connection lost</Text>
-        <TouchableOpacity
-          style={styles.retryButton}
-          onPress={() => window.location.reload()}>
-          <Text style={styles.retryButtonText}>Reconnect</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
   return (
-    <View style={styles.container}>
-      {/* Connection status bar */}
-      <View style={styles.statusBar}>
-        <Text style={styles.statusText}>
-          {currentChatId ? `Chat ID: ${currentChatId}` : 'Starting new chat...'}
-        </Text>
-      </View>
-
-      {/* Messages list */}
-      <FlatList
-        data={messages}
-        keyExtractor={(item, index) => `${index}-${item.sentAt}`}
-        renderItem={({item}) => (
-          <View
-            style={[
-              styles.messageBubble,
-              item.sender === 'USER' ? styles.userMessage : styles.adminMessage,
-            ]}>
-            <Text style={styles.messageText}>{item.text}</Text>
-            <Text style={styles.messageTime}>
-              {new Date(item.sentAt).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-            </Text>
-          </View>
-        )}
-        contentContainerStyle={styles.messagesContainer}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No messages yet</Text>
-          </View>
-        }
-      />
-
-      {/* Message input */}
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          value={messageText}
-          onChangeText={setMessageText}
-          placeholder="Type your message..."
-          placeholderTextColor="#999"
-          editable={isConnected}
+    <LinearGradient
+      colors={[theme.colors.primary, theme.colors.tertiary]}
+      style={styles.gradientContainer}>
+      <View style={globalStyles.container}>
+        <Header
+          logo={require('../../assets/splashScreen/splash-logo.png')}
+          title="Customer Care"
+          leftIcon={LeftIcon}
+          onPressLeft={() => navigation.goBack()}
         />
-        <TouchableOpacity
-          style={[
-            styles.sendButton,
-            (!isConnected || !messageText.trim()) && styles.disabledButton,
-          ]}
-          onPress={onSendMessage}
-          disabled={!isConnected || !messageText.trim()}>
-          <Text style={styles.sendButtonText}>Send</Text>
-        </TouchableOpacity>
+
+        {isLoading ? (
+          <View style={styles.loaderContainer}>
+            <Loader />
+          </View>
+        ) : messages.length > 0 ? (
+          <FlatList
+            data={messages}
+            keyExtractor={(item, index) => `${index}-${item.sentAt}`}
+            renderItem={({item}) => (
+              <View
+                style={[
+                  styles.messageBubble,
+                  item.sender === 'USER'
+                    ? styles.userMessage
+                    : styles.adminMessage,
+                ]}>
+                <Text
+                  style={
+                    item.sender === 'USER'
+                      ? styles.userMessageText
+                      : styles.adminMessageText
+                  }>
+                  {item.text}
+                </Text>
+
+                <Text style={styles.messageTime}>
+                  {new Date(item.sentAt).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </Text>
+              </View>
+            )}
+            contentContainerStyle={styles.messagesContainer}
+          />
+        ) : (
+          <Animated.View
+            style={[
+              styles.emptyContainer,
+              {
+                opacity: fadeAnim,
+                transform: [{translateY: bounceAnim}],
+              },
+            ]}>
+            <Feather
+              name="message-circle"
+              size={width * 0.24}
+              color={theme.colors.tertiary}
+            />
+            <Text style={styles.emptyText}>No messages yet</Text>
+          </Animated.View>
+        )}
+
+        <View style={styles.inputWrapper}>
+          <View style={styles.inputContainer}>
+            <InputField
+              value={messageText}
+              onChangeText={setMessageText}
+              placeholder="Type a message"
+              placeholderTextColor={theme.colors.gray}
+              editable={isConnected}
+              leftIcon={
+                <Feather
+                  name={'message-circle'}
+                  size={width * 0.044}
+                  color={theme.colors.primary}
+                />
+              }
+            />
+          </View>
+
+          <TouchableOpacity
+            style={[styles.sendButton, !isConnected || !messageText.trim()]}
+            onPress={onSendMessage}
+            disabled={!isConnected || !messageText.trim()}>
+            <FontAwesome6
+              name="paper-plane"
+              size={width * 0.06}
+              color={theme.colors.white}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </LinearGradient>
   );
 };
 
+export default Chat;
+
 const styles = StyleSheet.create({
-  container: {
+  gradientContainer: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
   },
-  statusBar: {
-    padding: 10,
-    backgroundColor: '#e0e0e0',
-  },
-  statusText: {
-    fontSize: 12,
-    color: '#666',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: 10,
-    color: theme.colors.secondary,
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  errorText: {
-    color: theme.colors.error,
-    marginBottom: 20,
-  },
-  retryButton: {
-    backgroundColor: theme.colors.primary,
-    padding: 10,
-    borderRadius: 5,
-  },
-  retryButtonText: {
-    color: '#fff',
-  },
+
   messagesContainer: {
-    padding: 10,
     flexGrow: 1,
+    padding: height * 0.02,
   },
+
   messageBubble: {
-    maxWidth: '80%',
-    padding: 10,
-    borderRadius: 10,
-    marginBottom: 10,
+    maxWidth: width * 0.8,
+    padding: height * 0.02,
+    borderRadius: theme.borderRadius.large,
+    marginBottom: height * 0.02,
   },
+
   userMessage: {
     alignSelf: 'flex-end',
-    backgroundColor: '#DCF8C6',
+    backgroundColor: theme.colors.primary,
+    borderBottomRightRadius: 0,
   },
+
   adminMessage: {
     alignSelf: 'flex-start',
-    backgroundColor: '#ECECEC',
+    backgroundColor: theme.colors.white,
+    borderBottomLeftRadius: 0,
   },
-  messageText: {
-    fontSize: 16,
+
+  userMessageText: {
+    fontSize: theme.typography.fontSize.sm,
+    fontFamily: theme.typography.poppins.regular,
+    color: theme.colors.white,
   },
+
+  adminMessageText: {
+    fontSize: theme.typography.fontSize.sm,
+    fontFamily: theme.typography.poppins.regular,
+    color: theme.colors.dark,
+  },
+
   messageTime: {
-    fontSize: 12,
-    color: '#666',
+    fontSize: theme.typography.fontSize.xs,
+    fontFamily: theme.typography.poppins.bold,
+    color: theme.colors.gray,
     alignSelf: 'flex-end',
-    marginTop: 5,
   },
+
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 50,
+    gap: theme.gap(1),
   },
+
   emptyText: {
-    fontSize: 18,
-    color: '#999',
+    fontSize: theme.typography.fontSize.md,
+    fontFamily: theme.typography.poppins.semiBold,
+    color: theme.colors.tertiary,
+    marginTop: height * 0.02,
   },
-  inputContainer: {
+
+  inputWrapper: {
     flexDirection: 'row',
-    padding: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#ddd',
-    backgroundColor: '#fff',
+    alignItems: 'center',
+    padding: height * 0.01,
+    borderTopWidth: 2,
+    borderTopColor: 'rgba(219, 166, 96, 1)',
+    backgroundColor: 'rgba(236, 193, 136, 0.8)',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
-  input: {
+
+  inputContainer: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 20,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    marginRight: 10,
+    marginRight: width * 0.02,
   },
+
+  input: {
+    fontSize: theme.typography.fontSize.md,
+    fontFamily: theme.typography.poppins.semiBold,
+    color: theme.colors.dark,
+    borderRadius: theme.borderRadius.circle,
+  },
+
   sendButton: {
+    width: width * 0.12,
+    height: width * 0.12,
+    borderRadius: theme.borderRadius.circle,
+    backgroundColor: theme.colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: theme.colors.primary,
-    borderRadius: 20,
-    paddingHorizontal: 20,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 5,
   },
-  disabledButton: {
-    backgroundColor: '#ccc',
-  },
-  sendButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
-
-export default Chat;

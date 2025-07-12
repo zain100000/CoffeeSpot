@@ -147,6 +147,26 @@
   color: var(--error);
 }
 
+/* Basic styling for the badge */
+#chats .status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  font-weight: bold;
+  font-size: 0.8rem;
+  border-radius: 9999px;
+  text-align: center;
+}
+
+#chats .status-badge.active {
+  color: #fff;
+  background-color: #28a745;
+}
+
+#chats .status-badge.closed {
+  color: #fff;
+  background-color: #dc3545;
+}
+
 /* Responsive styles */
 @media (max-width: 768px) {
   #chats .chats-header {

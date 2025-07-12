@@ -117,8 +117,8 @@
 }
 
 /* Badge Styles */
-.status-badge,
-.payment-badge {
+#orders .status-badge,
+#orders .payment-badge {
   padding: 4px 8px;
   border-radius: 12px;
   font-weight: 500;
@@ -126,88 +126,79 @@
   display: inline-block;
 }
 
-.status-badge {
+#orders .status-badge {
   color: white;
   text-transform: capitalize;
 }
 
-.payment-badge.paid {
+#orders .payment-badge.paid {
   background-color: #4caf50;
   color: white;
 }
 
-.payment-badge.pending,
-.payment-badge.unpaid {
+#orders .payment-badge.pending,
+#orders .payment-badge.unpaid {
   background-color: #ffa500;
   color: white;
 }
 
 /* Status Colors */
-.status-badge[style*="ORDER_RECEIVED"],
-.modal-btn-order_received {
+#orders .status-badge[style*="ORDER_RECEIVED"],
+#orders .modal-btn-order_received {
   background-color: #ffa500;
   color: white;
-
 }
 
-.status-badge[style*="PAYMENT_CONFIRMED"],
-.modal-btn-payment_confirmed {
+#orders .status-badge[style*="PAYMENT_CONFIRMED"],
+#orders .modal-btn-payment_confirmed {
   background-color: #4169e1;
   color: white;
-
 }
 
-.status-badge[style*="PREPARING"],
-.modal-btn-preparing {
+#orders .status-badge[style*="PREPARING"],
+#orders .modal-btn-preparing {
   background-color: #6a5acd;
   color: white;
-
 }
 
-.status-badge[style*="READY_FOR_PICKUP"],
-.modal-btn-ready_for_pickup {
+#orders .status-badge[style*="READY_FOR_PICKUP"],
+#orders .modal-btn-ready_for_pickup {
   background-color: #32cd32;
   color: white;
-
 }
 
-.status-badge[style*="PICKED_UP"],
-.modal-btn-picked_up {
+#orders .status-badge[style*="PICKED_UP"],
+#orders .modal-btn-picked_up {
   background-color: #228b22;
   color: white;
-
 }
 
-.status-badge[style*="COMPLETED"],
-.modal-btn-completed {
+#orders .status-badge[style*="COMPLETED"],
+#orders .modal-btn-completed {
   background-color: #4caf50;
   color: white;
-
 }
 
-.status-badge[style*="CANCELLED"],
-.modal-btn-cancelled {
+#orders .status-badge[style*="CANCELLED"],
+#orders.modal-btn-cancelled {
   background-color: #ff0000;
   color: white;
-
 }
 
-.status-badge[style*="REFUNDED"],
-.modal-btn-refunded {
+#orders .status-badge[style*="REFUNDED"],
+#orders.modal-btn-refunded {
   background-color: #ffc0cb;
   color: #333;
 }
 
-.modal-btn-danger {
+#orders .modal-btn-danger {
   background-color: #ff0000;
   color: white;
 }
 
-
-.modal-btn-paid {
+#orders .modal-btn-paid {
   background-color: #228b22;
   color: white;
-
 }
 
 /* Action Buttons */
@@ -218,7 +209,7 @@
   gap: 8px;
 }
 
-.action-btn {
+#orders .action-btn {
   padding: 2px 8px;
   border: none;
   border-radius: 4px;
@@ -226,40 +217,40 @@
   transition: all 0.2s;
 }
 
-.action-btn.view-detail {
+#orders .action-btn.view-detail {
   background-color: #2196f3;
   color: white;
 }
 
-.action-btn.delete-order {
+#orders .action-btn.delete-order {
   background-color: #ff0000;
   color: white;
 }
 
-.action-btn.status-change {
+#orders .action-btn.status-change {
   background-color: #ff9800;
   color: white;
 }
 
-.action-btn.payment-status-change {
+#orders .action-btn.payment-status-change {
   background-color: #4caf50;
   color: white;
 }
 
-.action-btn:hover {
+#orders .action-btn:hover {
   opacity: 0.8;
 }
 
 /* Modal Styles */
-.status-flow {
+#orders .status-flow {
   margin: 15px 0;
 }
 
-.status-options {
+#orders .status-options {
   margin-top: 10px;
 }
 
-.status-option {
+#orders .status-option {
   padding: 8px 12px;
   margin: 5px 0;
   background-color: #f5f5f5;
