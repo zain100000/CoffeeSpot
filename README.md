@@ -2,7 +2,7 @@
 
 ## Overview
 
-**Coffee Spot** is a full-stack mobile and web application built to help users discover nearby coffee shops, place orders, earn rewards, and more. It includes:
+**Coffee Spot** is a full-stack mobile with web based admin panel built to help users discover new coffees and , place orders, and customer care. It includes:
 
 - **📱 User App** – A React Native CLI mobile application for Android users  
 - **🔧 Backend** – A Node.js + Express REST API for handling all business logic and data  
