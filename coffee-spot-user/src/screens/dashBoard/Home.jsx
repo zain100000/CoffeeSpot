@@ -4,7 +4,6 @@ import {
   View,
   Dimensions,
   StatusBar,
-  SafeAreaView,
   Text,
   ScrollView,
   TouchableOpacity,
@@ -107,6 +106,13 @@ const Home = () => {
     });
   };
 
+  const handleChatNavigate = () => {
+    console.log('Navigating to Chat with userId:', user?.id);
+    navigation.navigate('Chat', {
+      userId: user?.id,
+    });
+  };
+
   return (
     <LinearGradient
       colors={[theme.colors.primary, theme.colors.tertiary]}
@@ -115,6 +121,7 @@ const Home = () => {
         <Header
           logo={require('../../assets/splashScreen/splash-logo.png')}
           title="CoffeeSpot"
+          onPressRight={handleChatNavigate}
           rightIcon={
             <FontAwesome5
               name="headset"

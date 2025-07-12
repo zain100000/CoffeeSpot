@@ -1,9 +1,11 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {StyleSheet, Dimensions} from 'react-native';
 import RootNavigator from './src/navigation/RootNavigator';
 import Toast, {ErrorToast, SuccessToast} from 'react-native-toast-message';
 import {theme} from './src/styles/theme';
 import Feather from 'react-native-vector-icons/Feather';
+import {initializeSocket} from './src/utils/customSocket/Socket';
+import {useSelector} from 'react-redux';
 
 const {width} = Dimensions.get('screen');
 

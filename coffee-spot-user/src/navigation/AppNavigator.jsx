@@ -25,6 +25,10 @@ import PrivacyPolicy from '../screens/profileModule/profileSubScreens/PrivacyPol
 import TermsAndConditions from '../screens/profileModule/profileSubScreens/AppUsage';
 import Account from '../screens/profileModule/profileSubScreens/Account';
 import Orders from '../screens/profileModule/profileSubScreens/orderScreens/Orders';
+import Chat from '../screens/customerCareModule/Chat';
+
+// Customer Care Screens
+
 
 const Stack = createNativeStackNavigator();
 
@@ -91,7 +95,6 @@ const AppNavigator = () => {
         </Stack.Screen>
 
         {/* Legal & Info Screens */}
-
         <Stack.Screen name="My_Account">
           {props => (
             <Account {...props} setStatusBarColor={setStatusBarColor} />
@@ -116,6 +119,16 @@ const AppNavigator = () => {
         <Stack.Screen name="My_Orders">
           {props => (
             <Orders
+              {...props}
+              setStatusBarColor={setStatusBarColor}
+            />
+          )}
+        </Stack.Screen>
+
+        {/* Customer Care Screens */}
+        <Stack.Screen name="Chat">
+          {props => (
+            <Chat
               {...props}
               setStatusBarColor={setStatusBarColor}
             />

@@ -97,6 +97,11 @@ exports.initializeChatSocket = (io) => {
               text: initialMessage || "Hello, I need help",
               sentAt: new Date(),
             },
+            {
+              sender: "SUPERADMIN",
+              text: "How can I assist you?",
+              sentAt: new Date(),
+            },
           ],
           isActive: true,
         });

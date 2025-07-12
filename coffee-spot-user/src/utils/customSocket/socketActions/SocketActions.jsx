@@ -1,89 +1,116 @@
 import socketManager from '../SocketManager';
-import {FRIEND_REQUEST_EVENTS} from '../socketEvents/SocketEvents';
+import {CHAT_EVENTS} from '../socketEvents/SocketEvents';
 
 // ======================
 // Events to EMIT (send)
 // ======================
 
-// Send a friend request
-export const sendFriendRequest = data => {
-  socketManager.emit(FRIEND_REQUEST_EVENTS.SEND_REQUEST, data);
+// Start a new chat session
+export const startChat = data => {
+  socketManager.emit(CHAT_EVENTS.START_CHAT, data);
 };
 
-// Accept a friend request
-export const acceptFriendRequest = data => {
-  socketManager.emit(FRIEND_REQUEST_EVENTS.ACCEPT_REQUEST, data);
+// Send a message in a chat
+export const sendMessage = data => {
+  socketManager.emit(CHAT_EVENTS.SEND_MESSAGE, data);
 };
 
-// Reject a friend request
-export const rejectFriendRequest = data => {
-  socketManager.emit(FRIEND_REQUEST_EVENTS.REJECT_REQUEST, data);
+// Get chat history
+export const getChatHistory = data => {
+  socketManager.emit(CHAT_EVENTS.GET_CHAT_HISTORY, data);
 };
 
-// Get pending friend requests
-export const getPendingFriendRequests = data => {
-  socketManager.emit(FRIEND_REQUEST_EVENTS.GET_PENDING_REQUESTS, data);
+// Close a chat
+export const closeChat = data => {
+  socketManager.emit(CHAT_EVENTS.CLOSE_CHAT, data);
 };
 
-// Get the friends list
-export const getFriendsList = data => {
-  socketManager.emit(FRIEND_REQUEST_EVENTS.GET_FRIENDS_LIST, data);
+// Get all chats (superadmin only)
+export const getAllChats = () => {
+  socketManager.emit(CHAT_EVENTS.GET_ALL_CHATS);
+};
+
+// Delete a chat (superadmin only)
+export const deleteChat = data => {
+  socketManager.emit(CHAT_EVENTS.DELETE_CHAT, data);
 };
 
 // ======================
 // Events to LISTEN (receive)
 // ======================
 
-// Listen for a received friend request
-export const listenToReceiveFriendRequest = callback => {
-  socketManager.on(FRIEND_REQUEST_EVENTS.RECEIVE_REQUEST, callback);
+// Listen for new chat notifications (superadmin)
+export const listenToNewChat = callback => {
+  socketManager.on(CHAT_EVENTS.NEW_CHAT, callback);
 };
 
-// Listen for when a friend request is accepted
-export const listenToFriendRequestAccepted = callback => {
-  socketManager.on(FRIEND_REQUEST_EVENTS.REQUEST_ACCEPTED, callback);
+// Listen for new messages
+export const listenToNewMessage = callback => {
+  socketManager.on(CHAT_EVENTS.NEW_MESSAGE, callback);
 };
 
-// Listen for when a friend request is rejected
-export const listenToFriendRequestRejected = callback => {
-  socketManager.on(FRIEND_REQUEST_EVENTS.REQUEST_REJECTED, callback);
+// Listen for chat history responses
+export const listenToChatHistory = callback => {
+  socketManager.on(CHAT_EVENTS.CHAT_HISTORY, callback);
 };
 
-// Listen for pending friend requests
-export const listenToPendingFriendRequestList = callback => {
-  socketManager.on(FRIEND_REQUEST_EVENTS.PENDING_REQUEST_LIST, callback);
+// Listen for chat closed notifications
+export const listenToChatClosed = callback => {
+  socketManager.on(CHAT_EVENTS.CHAT_CLOSED, callback);
 };
 
-// Listen for the friends list
-export const listenToFriendsList = callback => {
-  socketManager.on(FRIEND_REQUEST_EVENTS.FRIENDS_LIST, callback);
+// Listen for all chats list (superadmin)
+export const listenToAllChatsList = callback => {
+  socketManager.on(CHAT_EVENTS.ALL_CHATS_LIST, callback);
+};
+
+// Listen for chat deleted notifications
+export const listenToChatDeleted = callback => {
+  socketManager.on(CHAT_EVENTS.CHAT_DELETED, callback);
+};
+
+// Listen for error responses
+export const listenToError = callback => {
+  socketManager.on(CHAT_EVENTS.ERROR, callback);
+};
+
+// Listen for success responses
+export const listenToSuccess = callback => {
+  socketManager.on(CHAT_EVENTS.SUCCESS, callback);
 };
 
 // ======================
 // Clean up (to remove listeners)
 // ======================
 
-// Remove the listener for received friend requests
-export const removeReceiveFriendRequestListener = () => {
-  socketManager.off(FRIEND_REQUEST_EVENTS.RECEIVE_REQUEST);
+export const removeNewChatListener = () => {
+  socketManager.off(CHAT_EVENTS.NEW_CHAT);
 };
 
-// Remove the listener for accepted friend requests
-export const removeFriendRequestAcceptedListener = () => {
-  socketManager.off(FRIEND_REQUEST_EVENTS.REQUEST_ACCEPTED);
+export const removeNewMessageListener = () => {
+  socketManager.off(CHAT_EVENTS.NEW_MESSAGE);
 };
 
-// Remove the listener for rejected friend requests
-export const removeFriendRequestRejectedListener = () => {
-  socketManager.off(FRIEND_REQUEST_EVENTS.REQUEST_REJECTED);
+export const removeChatHistoryListener = () => {
+  socketManager.off(CHAT_EVENTS.CHAT_HISTORY);
 };
 
-// Remove the listener for pending friend requests list
-export const removePendingFriendRequestListListener = () => {
-  socketManager.off(FRIEND_REQUEST_EVENTS.PENDING_REQUEST_LIST);
+export const removeChatClosedListener = () => {
+  socketManager.off(CHAT_EVENTS.CHAT_CLOSED);
 };
 
-// Remove the listener for friends list
-export const removeFriendsListListener = () => {
-  socketManager.off(FRIEND_REQUEST_EVENTS.FRIENDS_LIST);
+export const removeAllChatsListListener = () => {
+  socketManager.off(CHAT_EVENTS.ALL_CHATS_LIST);
+};
+
+export const removeChatDeletedListener = () => {
+  socketManager.off(CHAT_EVENTS.CHAT_DELETED);
+};
+
+export const removeErrorListener = () => {
+  socketManager.off(CHAT_EVENTS.ERROR);
+};
+
+export const removeSuccessListener = () => {
+  socketManager.off(CHAT_EVENTS.SUCCESS);
 };
