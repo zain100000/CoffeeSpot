@@ -5,7 +5,7 @@ const {width, height} = Dimensions.get('screen');
 
 const scale = size => width * (size / 375);
 const verticalScale = size => height * (size / 812);
-const moderateScale = (size, factor = 0.5) =>
+const moderateScale = (size, factor = 0) =>
   size + (scale(size) - size) * factor;
 
 export const globalStyles = StyleSheet.create({

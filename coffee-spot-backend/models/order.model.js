@@ -23,13 +23,22 @@ const orderSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["PENDING", "PROCESSING", "DELIVERED", "CANCELLED"],
-      default: "PENDING",
+      enum: [
+        "ORDER_RECEIVED", // Order placed but payment not confirmed yet
+        "PAYMENT_CONFIRMED", // Payment successfully processed
+        "PREPARING", // Barista is making the drinks
+        "READY_FOR_PICKUP", // Order is ready at counter
+        "PICKED_UP", // Customer has received order
+        "COMPLETED", // Order fulfilled (for records)
+        "CANCELLED", // Order cancelled before preparation
+        "REFUNDED", // Order cancelled and refunded
+      ],
+      default: "ORDER_RECEIVED",
     },
 
     payment: {
       type: String,
-      enum: ["PENDING", "PAID"],
+      enum: ["PENDING", "PAID", "UNPAID"],
       default: "PENDING",
       required: true,
     },

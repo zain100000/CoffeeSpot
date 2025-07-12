@@ -3,23 +3,28 @@ import {StatusBar} from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {theme} from '../styles/theme';
 
-/* Shared Imports */
+// Shared Screens
 import Splash from '../screens/shared/Splash';
 import OnBoarding from '../screens/shared/OnBoarding';
 
-/* Auth Imports */
+// Auth Screens
 import Signin from '../screens/auth/Signin';
 import Signup from '../screens/auth/Signup';
 
-// Home Imports
+// Main (Dashboard) Screens
 import BottomNavigator from './bottomNavigator/BottomNavigator';
 import CoffeeCategory from '../screens/dashBoard/coffeeCategoryScreens/CoffeeCategory';
 import ProductDetail from '../screens/dashBoard/coffeeCategoryScreens/ProductDetail';
 
-// Order(Cart + CheckOut) Imports
+// Order Flow Screens
 import CheckOut from '../screens/checkoutModule/CheckOut';
 import Receipt from '../screens/receiptModule/Receipt';
-import TrackOrder from '../screens/trackingModule/TrackOrder';
+
+// Profile & Legal Screens
+import PrivacyPolicy from '../screens/profileModule/profileSubScreens/PrivacyPolicy';
+import TermsAndConditions from '../screens/profileModule/profileSubScreens/AppUsage';
+import Account from '../screens/profileModule/profileSubScreens/Account';
+import Orders from '../screens/profileModule/profileSubScreens/orderScreens/Orders';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +37,7 @@ const AppNavigator = () => {
       <Stack.Navigator
         screenOptions={{headerShown: false}}
         initialRouteName="Splash">
+
         {/* Shared Routes */}
         <Stack.Screen name="Splash">
           {props => <Splash {...props} setStatusBarColor={setStatusBarColor} />}
@@ -52,26 +58,26 @@ const AppNavigator = () => {
           {props => <Signup {...props} setStatusBarColor={setStatusBarColor} />}
         </Stack.Screen>
 
-        {/* Home Routes */}
+        {/* Main App Routes */}
         <Stack.Screen name="Main">
           {props => (
             <BottomNavigator {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
 
-        <Stack.Screen name="CategoryProducts">
+        <Stack.Screen name="Category_Products">
           {props => (
             <CoffeeCategory {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
 
-        <Stack.Screen name="ProductDetail">
+        <Stack.Screen name="Product_Detail">
           {props => (
             <ProductDetail {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
 
-        {/* CheckOut Routes */}
+        {/* Checkout & Order Routes */}
         <Stack.Screen name="CheckOut">
           {props => (
             <CheckOut {...props} setStatusBarColor={setStatusBarColor} />
@@ -84,11 +90,38 @@ const AppNavigator = () => {
           )}
         </Stack.Screen>
 
-        <Stack.Screen name="Tracking">
+        {/* Legal & Info Screens */}
+
+        <Stack.Screen name="My_Account">
           {props => (
-            <TrackOrder {...props} setStatusBarColor={setStatusBarColor} />
+            <Account {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>       
+
+        <Stack.Screen name="Privacy_Policy">
+          {props => (
+            <PrivacyPolicy {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
+
+        <Stack.Screen name="App_Usage">
+          {props => (
+            <TermsAndConditions
+              {...props}
+              setStatusBarColor={setStatusBarColor}
+            />
+          )}
+        </Stack.Screen>
+
+        <Stack.Screen name="My_Orders">
+          {props => (
+            <Orders
+              {...props}
+              setStatusBarColor={setStatusBarColor}
+            />
+          )}
+        </Stack.Screen>
+
       </Stack.Navigator>
     </>
   );

@@ -6,15 +6,13 @@ import {
   SafeAreaView,
   Dimensions,
   ScrollView,
-  //   TouchableOpacity,
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {globalStyles} from '../../styles/globalStyles';
 import LeftIcon from '../../assets/icons/chevron-left.png';
 import {theme} from '../../styles/theme';
 import Header from '../../utils/customComponents/customHeader/Header';
-import Button from '../../utils/customComponents/customButton/Button';
-// import Feather from 'react-native-vector-icons/Feather';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -23,14 +21,6 @@ const Receipt = () => {
   const navigation = useNavigation();
   const {receiptData} = route.params;
 
-  const handleTrackOrder = () => {
-    // Navigate to the tracking screen and pass any necessary data
-    navigation.navigate('Tracking', {
-      orderId: receiptData.orderId,
-      // Add any other data you want to pass to the tracking screen
-    });
-  };
-
   return (
     <SafeAreaView style={[globalStyles.container, styles.container]}>
       <View style={styles.headerContainer}>
@@ -38,13 +28,22 @@ const Receipt = () => {
           logo={require('../../assets/splashScreen/splash-logo.png')}
           title={'CoffeeSpot'}
           leftIcon={LeftIcon}
-          onPressLeft={() => navigation.goBack()}
+          onPressLeft={() => navigation.replace('Main')}
         />
       </View>
 
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}>
+        <View style={styles.sectionHeaderContainer}>
+          <FontAwesome5
+            name="receipt"
+            size={width * 0.06}
+            color={theme.colors.tertiary}
+          />
+          <Text style={styles.headerTitle}>Your Order Receipt</Text>
+        </View>
+
         <View style={styles.receiptContainer}>
           <View style={styles.receiptHeaderContainer}>
             <Text style={styles.recieptLabel}>Thank You!</Text>
@@ -56,7 +55,7 @@ const Receipt = () => {
               <View style={styles.orderRow}>
                 <Text style={styles.label}>Order ID</Text>
                 <Text style={styles.value}>
-                  V{receiptData.orderId.substring(15, 24).toUpperCase()}
+                  V{receiptData.orderId.substring(18, 24).toUpperCase()}
                 </Text>
               </View>
 
@@ -122,30 +121,6 @@ const Receipt = () => {
                 </Text>
               </View>
             </View>
-
-            {/* Tracking Order Section */}
-            <View style={styles.trackingSection}>
-              <View style={styles.btnContainer}>
-                <Button
-                  title={'Track Your Order'}
-                  backgroundColor={theme.colors.primary}
-                  textColor={theme.colors.white}
-                  width={width * 0.86}
-                  onPress={handleTrackOrder}
-                />
-              </View>
-
-              {/* <TouchableOpacity
-              activeOpacity={0.9}
-              style={styles.downloadBtn}
-              onPress={() => {}}>
-              <Feather
-                name="download"
-                size={width * 0.06}
-                color={theme.colors.white}
-              />
-            </TouchableOpacity> */}
-            </View>
           </View>
         </View>
       </ScrollView>
@@ -165,6 +140,20 @@ const styles = StyleSheet.create({
     paddingBottom: height * 0.1,
   },
 
+  sectionHeaderContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    top: height * 0.06,
+    gap: theme.gap(2),
+  },
+
+  headerTitle: {
+    fontSize: theme.typography.fontSize.md,
+    fontFamily: theme.typography.poppins.bold,
+    color: theme.colors.tertiary,
+  },
+
   receiptContainer: {
     backgroundColor: theme.colors.white,
     borderTopLeftRadius: theme.borderRadius.large,
@@ -175,7 +164,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
     margin: height * 0.014,
-    marginTop: height * 0.06,
+    marginTop: height * 0.09,
   },
 
   recieptLabel: {
@@ -235,31 +224,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: height * 0.004,
-  },
-
-  // Tracking Button Section Styles
-  trackingSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: height * 0.04,
-    paddingHorizontal: width * 0.02,
-    marginBottom: height * 0.02,
-  },
-
-  btnContainer: {
-    marginLeft: width * 0.02,
-  },
-
-  downloadBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: height * 0.01,
-    borderWidth: 2,
-    borderColor: theme.colors.primary,
-    borderRadius: theme.borderRadius.circle,
-    backgroundColor: theme.colors.primary,
-    marginRight: width * 0.04,
   },
 
   // Common Styles

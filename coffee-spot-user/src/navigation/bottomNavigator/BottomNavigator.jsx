@@ -2,6 +2,7 @@ import React, {useEffect, useRef} from 'react';
 import {Image, StyleSheet, Dimensions, Animated} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import LinearGradient from 'react-native-linear-gradient';
+import {useSelector} from 'react-redux';
 import {theme} from '../../styles/theme';
 
 import Home from '../../screens/dashBoard/Home';
@@ -9,17 +10,15 @@ import Menu from '../../screens/menuModule/Menu';
 import Cart from '../../screens/cartModule/Cart';
 import Profile from '../../screens/profileModule/Profile';
 
-import {useSelector} from 'react-redux';
-
 const Tab = createBottomTabNavigator();
 const {width, height} = Dimensions.get('screen');
 
-// ✅ Animated Icon with Glow
+// Animated icon with glow + badge
 const AnimatedTabIcon = ({focused, source, badgeCount = 0}) => {
-  const scaleValue = useRef(new Animated.Value(1)).current;
+  const scale = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    Animated.spring(scaleValue, {
+    Animated.spring(scale, {
       toValue: focused ? 1.2 : 1,
       friction: 5,
       useNativeDriver: true,
@@ -27,8 +26,7 @@ const AnimatedTabIcon = ({focused, source, badgeCount = 0}) => {
   }, [focused]);
 
   return (
-    <Animated.View
-      style={[styles.iconWrapper, {transform: [{scale: scaleValue}]}]}>
+    <Animated.View style={[styles.iconWrapper, {transform: [{scale}]}]}>
       {focused && (
         <LinearGradient
           colors={[theme.colors.primary, theme.colors.tertiary]}
@@ -55,36 +53,29 @@ const AnimatedTabIcon = ({focused, source, badgeCount = 0}) => {
   );
 };
 
-// ✅ Tab Navigator
 const BottomNavigator = () => {
-  const {cartItems} = useSelector(state => state.cart);
-  const cartCount =
-    cartItems?.reduce((sum, item) => sum + item.quantity, 0) || 0;
-
-  console.log(cartItems);
+  // guard against undefined
+  const cartItems = useSelector(s => s.cart.cartItems) || [];
+  const cartCount = cartItems.reduce((sum, it) => sum + it.quantity, 0);
 
   return (
     <Tab.Navigator
       initialRouteName="Home"
       screenOptions={{
         headerShown: false,
-        tabBarShowLabel: true,
+        tabBarShowLabel: false,
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.white,
         tabBarLabelStyle: styles.tabBarLabel,
         tabBarStyle: [
           styles.tabBar,
-          {
-            backgroundColor: theme.colors.tertiary,
-            ...theme.elevation.depth3,
-          },
+          {backgroundColor: theme.colors.tertiary, ...theme.elevation.depth3},
         ],
       }}>
       <Tab.Screen
         name="Home"
         component={Home}
         options={{
-          tabBarLabel: '',
           tabBarIcon: ({focused}) => (
             <AnimatedTabIcon
               focused={focused}
@@ -97,11 +88,11 @@ const BottomNavigator = () => {
           ),
         }}
       />
+
       <Tab.Screen
         name="Categories"
         component={Menu}
         options={{
-          tabBarLabel: '',
           tabBarIcon: ({focused}) => (
             <AnimatedTabIcon
               focused={focused}
@@ -114,11 +105,11 @@ const BottomNavigator = () => {
           ),
         }}
       />
+
       <Tab.Screen
         name="Cart"
         component={Cart}
         options={{
-          tabBarLabel: '',
           tabBarIcon: ({focused}) => (
             <AnimatedTabIcon
               focused={focused}
@@ -137,7 +128,6 @@ const BottomNavigator = () => {
         name="Profile"
         component={Profile}
         options={{
-          tabBarLabel: '',
           tabBarIcon: ({focused}) => (
             <AnimatedTabIcon
               focused={focused}

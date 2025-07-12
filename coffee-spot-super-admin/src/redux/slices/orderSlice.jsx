@@ -97,6 +97,25 @@ export const updatePaymentStatus = createAsyncThunk(
   }
 );
 
+export const deleteOrder = createAsyncThunk(
+  "order/deleteOrder",
+  async (orderId, { rejectWithValue, getState }) => {
+    const token = getToken();
+
+    try {
+      await axios.delete(`${BACKEND_API_URL}/order/delete-order/${orderId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const { orders } = getState().orders;
+      return orders.filter((order) => order._id !== orderId);
+    } catch (error) {
+      console.error("Error deleting order:", error.response?.data);
+      return rejectWithValue(error.response?.data || "An error occurred.");
+    }
+  }
+);
+
 const orderSlice = createSlice({
   name: "orders",
   initialState: {
@@ -156,6 +175,18 @@ const orderSlice = createSlice({
         state.orders = action.payload;
       })
       .addCase(updatePaymentStatus.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(deleteOrder.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteOrder.fulfilled, (state, action) => {
+        state.loading = false;
+        state.orders = action.payload;
+      })
+      .addCase(deleteOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

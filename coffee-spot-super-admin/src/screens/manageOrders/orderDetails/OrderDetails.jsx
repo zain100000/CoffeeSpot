@@ -9,16 +9,35 @@ const OrderDetails = () => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  console.log("ORDERS", order);
-
-  console.log("ORDERS", order);
-
   useEffect(() => {
     setTimeout(() => {
       setOrder(location.state?.order || null);
       setLoading(false);
     }, 1000);
   }, [location.state]);
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "ORDER_RECEIVED":
+        return "#FFA500"; // Orange
+      case "PAYMENT_CONFIRMED":
+        return "#4169E1"; // Royal Blue
+      case "PREPARING":
+        return "#6A5ACD"; // Slate Blue
+      case "READY_FOR_PICKUP":
+        return "#32CD32"; // Lime Green
+      case "PICKED_UP":
+        return "#228B22"; // Forest Green
+      case "COMPLETED":
+        return "#4CAF50"; // Green
+      case "CANCELLED":
+        return "#FF0000"; // Red
+      case "REFUNDED":
+        return "#FFC0CB"; // Pink
+      default:
+        return "#808080"; // Gray
+    }
+  };
 
   if (loading) {
     return (
@@ -44,7 +63,7 @@ const OrderDetails = () => {
     <section id="order-detail">
       <h2 className="orders-title">Order Details</h2>
       <div className="content-container">
-        <div className="order-image-container">
+        {/* <div className="order-image-container">
           {order?.items?.[0]?.productId?.productImage ? (
             <img
               src={order.items[0].productId.productImage}
@@ -61,7 +80,7 @@ const OrderDetails = () => {
               className="order-image"
             />
           )}
-        </div>
+        </div> */}
 
         <div className="details-container">
           <div className="details-table">
@@ -72,8 +91,11 @@ const OrderDetails = () => {
               </div>
               <div className="detail-label">Status</div>
               <div className="detail-value">
-                <span className={`status-badge ${order.status.toLowerCase()}`}>
-                  {order.status}
+                <span
+                  className="status-badge"
+                  style={{ backgroundColor: getStatusColor(order.status) }}
+                >
+                  {order.status.replace(/_/g, " ")}
                 </span>
               </div>
             </div>
@@ -81,11 +103,18 @@ const OrderDetails = () => {
             <div className="detail-row">
               <div className="detail-label">Placed At</div>
               <div className="detail-value">
-                {new Date(order.placedAt).toLocaleString()}
+                {new Date(order.placedAt || order.createdAt).toLocaleString()}
               </div>
               <div className="detail-label">Payment Status</div>
               <div className="detail-value">
-                <span className={`status-badge ${order.payment.toLowerCase()}`}>
+                <span
+                  className="payment-badge"
+                  style={{
+                    backgroundColor:
+                      order.payment === "PAID" ? "#4CAF50" : "#FFA500",
+                    color: "white",
+                  }}
+                >
                   {order.payment}
                 </span>
               </div>
@@ -94,9 +123,7 @@ const OrderDetails = () => {
             <div className="detail-row">
               <div className="detail-label">Payment Method</div>
               <div className="detail-value">
-                <span className={`status-badge ${order.payment.toLowerCase()}`}>
-                  {order.paymentMethod}
-                </span>
+                <span className="payment-method">{order.paymentMethod}</span>
               </div>
             </div>
 
@@ -110,8 +137,8 @@ const OrderDetails = () => {
             <div className="detail-row">
               <div className="detail-label">Customer Phone</div>
               <div className="detail-value">{order.userId?.phone}</div>
-              <div className="detail-label">Customer Address</div>
-              <div className="detail-value">{order.userId?.address}</div>
+              <div className="detail-label">Shipping Address</div>
+              <div className="detail-value">{order.shippingAddress}</div>
             </div>
           </div>
         </div>
@@ -128,12 +155,26 @@ const OrderDetails = () => {
             <div className="header-cell">Total Price</div>
           </div>
 
-          {order.items.map((item) => (
-            <div className="item-row" key={item._id}>
-              <div className="item-cell">{item.productId?.title}</div>
+          {order.items.map((item, index) => (
+            <div className="item-row" key={index}>
+              <div className="item-cell">
+                <img
+                  src={item.productId?.productImage || "/default-order.png"}
+                  alt={item.productId?.title || "Product"}
+                  className="product-image"
+                  onError={(e) => {
+                    e.target.src = "/default-order.png";
+                  }}
+                />
+              </div>
+              <div className="item-cell">
+                {item.productId?.title || item.title || "Unknown Product"}
+              </div>
               <div className="item-cell">{item.quantity}</div>
-              <div className="item-cell">PKR{item.productId?.price}</div>
-              <div className="item-cell">PKR{order.shippingFee}</div>
+              <div className="item-cell">
+                PKR {item.productId?.price || item.price || 0}
+              </div>
+              <div className="item-cell">PKR {order.shippingFee}</div>
               <div className="item-cell">PKR {order.totalAmount}</div>
             </div>
           ))}

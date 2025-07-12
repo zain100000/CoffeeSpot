@@ -43,8 +43,7 @@ exports.placeOrder = async (req, res) => {
       }
 
       calculatedSubtotal += product.price * item.quantity;
-      product.stock -= item.quantity;
-      await product.save();
+      // Don't reduce stock yet - only reduce when payment is confirmed
     }
 
     const numericShippingFee = parseFloat(shippingFee);
@@ -57,6 +56,7 @@ exports.placeOrder = async (req, res) => {
       });
     }
 
+    // Create the order with initial statuses
     const order = new Order({
       userId,
       items,
@@ -64,22 +64,46 @@ exports.placeOrder = async (req, res) => {
       shippingFee: shippingFee.toString(),
       paymentMethod,
       totalAmount,
-      status: "PENDING",
-      payment: "PENDING",
+      status: "ORDER_RECEIVED", // Initial status
+      payment: paymentMethod === "COD" ? "PENDING" : "UNPAID", // More descriptive payment status
+      statusHistory: [
+        {
+          status: "ORDER_RECEIVED",
+          changedAt: new Date(),
+          changedBy: "system",
+        },
+      ],
     });
 
-    await order.save();
+    // Save the order
+    const savedOrder = await order.save();
+
+    // Update the user's orders array
+    await User.findByIdAndUpdate(
+      userId,
+      {
+        $push: {
+          orders: {
+            orderId: savedOrder._id,
+            status: "ORDER_RECEIVED", // Sync status with order
+            placedAt: new Date(),
+          },
+        },
+      },
+      { new: true }
+    );
 
     res.status(201).json({
       success: true,
-      message: "Order placed successfully",
-      order,
+      message: "Order placed successfully. Please complete payment.",
+      order: savedOrder,
     });
   } catch (error) {
     console.error("Order Error:", error);
     res.status(500).json({
       success: false,
-      message: "Server error",
+      message: "Server error while placing order",
+      error: error.message,
     });
   }
 };
@@ -95,14 +119,30 @@ exports.getAllOrders = async (req, res) => {
         .populate("userId")
         .populate("items.productId");
     } else {
-      const user = await User.findById(id).populate({
-        path: "orders.orderId",
-        populate: [{ path: "userId" }, { path: "items.productId" }],
-      });
-      orders = user.orders.map((o) => o.orderId);
+      // First verify the user exists
+      const user = await User.findById(id);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      // Get orders directly from Order model for better consistency
+      orders = await Order.find({ userId: id })
+        .populate("userId")
+        .populate("items.productId");
     }
 
-    res.status(201).json({
+    if (!orders || orders.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: "No orders found",
+        orders: [],
+      });
+    }
+
+    res.status(200).json({
       success: true,
       message: "Orders fetched successfully",
       orders,
@@ -112,6 +152,7 @@ exports.getAllOrders = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Server error",
+      error: error.message,
     });
   }
 };
@@ -215,10 +256,11 @@ exports.cancelOrder = async (req, res) => {
 // Admin order status update
 exports.updateOrderStatus = async (req, res) => {
   try {
+    // Only SUPERADMIN can update order status
     if (req.user.role !== "SUPERADMIN") {
       return res.status(403).json({
         success: false,
-        message: "Unauthorized",
+        message: "Unauthorized - Only SUPERADMIN can update order status",
       });
     }
 
@@ -232,7 +274,18 @@ exports.updateOrderStatus = async (req, res) => {
       });
     }
 
-    const validStatuses = ["PENDING", "PROCESSING", "DELIVERED", "CANCELLED"];
+    // Valid statuses for coffee shop
+    const validStatuses = [
+      "ORDER_RECEIVED",
+      "PAYMENT_CONFIRMED",
+      "PREPARING",
+      "READY_FOR_PICKUP",
+      "PICKED_UP",
+      "COMPLETED",
+      "CANCELLED",
+      "REFUNDED",
+    ];
+
     if (!validStatuses.includes(status)) {
       return res.status(400).json({
         success: false,
@@ -241,15 +294,41 @@ exports.updateOrderStatus = async (req, res) => {
     }
 
     // Status transition validation
-    if (status === "CANCELLED" && ["DELIVERED"].includes(order.status)) {
+    const currentStatus = order.status;
+
+    // Cannot revert from finalized states
+    if (["COMPLETED", "CANCELLED", "REFUNDED"].includes(currentStatus)) {
       return res.status(400).json({
         success: false,
-        message: "Cannot cancel delivered order",
+        message: `Cannot modify order from ${currentStatus} state`,
       });
     }
 
-    // Restore stock if cancelling
-    if (status === "CANCELLED") {
+    // Valid status transitions
+    if (status === "READY_FOR_PICKUP" && currentStatus !== "PREPARING") {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Order must be in PREPARING status before marking as READY_FOR_PICKUP",
+      });
+    }
+
+    if (status === "PICKED_UP" && currentStatus !== "READY_FOR_PICKUP") {
+      return res.status(400).json({
+        success: false,
+        message: "Order must be READY_FOR_PICKUP before marking as PICKED_UP",
+      });
+    }
+
+    if (status === "COMPLETED" && currentStatus !== "PICKED_UP") {
+      return res.status(400).json({
+        success: false,
+        message: "Order must be PICKED_UP before marking as COMPLETED",
+      });
+    }
+
+    // Restore stock if cancelling or refunding
+    if (["CANCELLED", "REFUNDED"].includes(status)) {
       for (const item of order.items) {
         await Product.findByIdAndUpdate(item.productId, {
           $inc: { stock: item.quantity },
@@ -257,7 +336,15 @@ exports.updateOrderStatus = async (req, res) => {
       }
     }
 
+    // Update order status and history
     order.status = status;
+    order.statusHistory = order.statusHistory || [];
+    order.statusHistory.push({
+      status,
+      changedAt: new Date(),
+      changedBy: req.user._id,
+    });
+
     await order.save();
 
     // Update user's order reference
@@ -266,16 +353,17 @@ exports.updateOrderStatus = async (req, res) => {
       { $set: { "orders.$.status": status } }
     );
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: "Order status updated successfully",
       order,
     });
   } catch (error) {
-    console.error("Order Error:", error);
+    console.error("Order Status Update Error:", error);
     res.status(500).json({
       success: false,
-      message: "Server error",
+      message: "Server error while updating order status",
+      error: error.message,
     });
   }
 };
@@ -319,6 +407,51 @@ exports.updatePaymentStatus = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Server error",
+    });
+  }
+};
+
+// Delete order (admin only)
+exports.deleteOrder = async (req, res) => {
+  try {
+    // Only SUPERADMIN can delete orders
+    if (req.user.role !== "SUPERADMIN") {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized - Only SUPERADMIN can delete orders",
+      });
+    }
+
+    const { id } = req.params;
+
+    // Find the order
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Delete the order
+    await Order.findByIdAndDelete(id);
+
+    // Remove the order reference from the user's orders array
+    await User.updateOne(
+      { _id: order.userId },
+      { $pull: { orders: { orderId: id } } }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Order deleted successfully",
+    });
+  } catch (error) {
+    console.error("Order Deletion Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while deleting order",
+      error: error.message,
     });
   }
 };

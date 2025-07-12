@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import {
   Modal,
   View,
@@ -10,76 +10,20 @@ import {
 } from 'react-native';
 import LottieView from 'lottie-react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import ImagePicker from 'react-native-image-crop-picker';
-import Toast from 'react-native-toast-message';
 import {theme} from '../../styles/theme';
 
-// Make sure this path is valid
-import uploadAnimation from '../../assets/animations/image.json';
+import deleteAnimation from '../../assets/animations/delete.json';
 
 const {width, height} = Dimensions.get('screen');
 
-const ImageUploadModal = ({
+const DeleteAccountModal = ({
   visible,
   title,
   description,
   onClose,
-  onImageUpload,
+  onDeleteConfirm,
+  loading = true,
 }) => {
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    console.log('ImageUploadModal rendered - visible:', visible);
-  }, [visible]);
-
-  const handleImageSelection = image => {
-    if (!image) return;
-    setLoading(false);
-    onImageUpload(image.path);
-  };
-
-  const handlePickImage = async () => {
-    setLoading(true);
-    try {
-      const image = await ImagePicker.openPicker({
-        width: 400,
-        height: 400,
-        cropping: true,
-      });
-      handleImageSelection(image);
-    } catch (error) {
-      console.error('Image Picker Error:', error);
-      Toast.show({
-        type: 'error',
-        text1: 'Image Selection Failed',
-        text2: 'Something went wrong while picking the image.',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleOpenCamera = async () => {
-    setLoading(true);
-    try {
-      const image = await ImagePicker.openCamera({
-        width: 400,
-        height: 400,
-        cropping: true,
-      });
-      handleImageSelection(image);
-    } catch (error) {
-      console.error('Camera Error:', error);
-      Toast.show({
-        type: 'error',
-        text1: 'Camera Error',
-        text2: 'Something went wrong while opening the camera.',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <Modal
       animationType="slide"
@@ -89,52 +33,63 @@ const ImageUploadModal = ({
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
           {/* Animation or fallback */}
-          {uploadAnimation ? (
+          {deleteAnimation ? (
             <LottieView
-              source={uploadAnimation}
+              source={deleteAnimation}
               autoPlay
               loop
               style={styles.animation}
             />
           ) : (
-            <Text style={{color: 'red', marginBottom: 10}}>
-              Animation failed to load.
-            </Text>
+            <Ionicons
+              name="warning"
+              size={80}
+              color={theme.colors.error}
+              style={{marginBottom: 10}}
+            />
           )}
 
           <Text style={styles.modalText}>{title}</Text>
           <Text style={styles.descriptionText}>{description}</Text>
 
           <View style={styles.btnContainer}>
-            {/* Camera */}
-            <TouchableOpacity onPress={handleOpenCamera}>
-              <View style={styles.cameraContainer}>
+            {/* Cancel Button */}
+            <TouchableOpacity onPress={onClose} disabled={loading}>
+              <View style={styles.cancelContainer}>
                 <Ionicons
-                  name="camera"
+                  name="close"
                   size={25}
                   color={theme.colors.white}
                   style={styles.icon}
                 />
-                <Text style={styles.cameraText}>Camera</Text>
+                <Text style={styles.cancelText}>Cancel</Text>
               </View>
             </TouchableOpacity>
 
-            {/* Gallery */}
-            <TouchableOpacity onPress={handlePickImage}>
-              <View style={styles.galleryContainer}>
-                {loading ? (
-                  <ActivityIndicator size={25} color={theme.colors.white} />
-                ) : (
-                  <>
-                    <Ionicons
-                      name="image"
-                      size={25}
-                      color={theme.colors.white}
-                      style={styles.icon}
-                    />
-                    <Text style={styles.galleryText}>Gallery</Text>
-                  </>
-                )}
+            {/* Delete Button */}
+            <TouchableOpacity onPress={onDeleteConfirm} disabled={loading}>
+              <View style={styles.deleteContainer}>
+                {/* Inner View for centering and spacing icon/text */}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  {loading ? (
+                    <ActivityIndicator size={25} color={theme.colors.white} />
+                  ) : (
+                    <>
+                      <Ionicons
+                        name="trash"
+                        size={25}
+                        color={theme.colors.white}
+                        style={styles.icon}
+                      />
+                      <Text style={styles.deleteText}>Delete</Text>
+                    </>
+                  )}
+                </View>
               </View>
             </TouchableOpacity>
           </View>
@@ -144,7 +99,7 @@ const ImageUploadModal = ({
   );
 };
 
-export default ImageUploadModal;
+export default DeleteAccountModal;
 
 const styles = StyleSheet.create({
   centeredView: {
@@ -171,7 +126,7 @@ const styles = StyleSheet.create({
     width: width * 0.92,
     height: height * 0.48,
   },
-
+  
   animation: {
     width: width * 0.4,
     height: width * 0.4,
@@ -201,39 +156,40 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 
-  cameraContainer: {
+  button: {
+    flex: 1,
+  },
+
+  cancelContainer: {
     flexDirection: 'row',
-    backgroundColor: theme.colors.dark,
+    backgroundColor: theme.colors.secondary,
     borderRadius: 10,
     gap: 10,
     paddingVertical: height * 0.022,
     paddingHorizontal: height * 0.02,
-    marginHorizontal: width * 0.003,
-    width: width * 0.35,
     justifyContent: 'center',
     alignItems: 'center',
+    width: width * 0.35,
   },
 
-  galleryContainer: {
+  deleteContainer: {
     flexDirection: 'row',
-    backgroundColor: theme.colors.primary,
+    backgroundColor: theme.colors.error,
     borderRadius: 10,
-    gap: 10,
     paddingVertical: height * 0.022,
     paddingHorizontal: height * 0.02,
-    marginHorizontal: width * 0.003,
-    width: width * 0.35,
     justifyContent: 'center',
     alignItems: 'center',
+    width: width * 0.35,
   },
 
-  cameraText: {
+  cancelText: {
     fontSize: width * 0.04,
     color: theme.colors.white,
     fontFamily: theme.typography.poppins.regular,
   },
-
-  galleryText: {
+  
+  deleteText: {
     fontSize: width * 0.04,
     color: theme.colors.white,
     fontFamily: theme.typography.poppins.regular,

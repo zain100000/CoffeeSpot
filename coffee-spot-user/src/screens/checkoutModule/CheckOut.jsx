@@ -9,67 +9,57 @@ import {
   TouchableOpacity,
   Image,
   Animated,
-  Easing,
 } from 'react-native';
 import {theme} from '../../styles/theme';
 import {globalStyles} from '../../styles/globalStyles';
 import Header from '../../utils/customComponents/customHeader/Header';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import Feather from 'react-native-vector-icons/Feather';
 import {useRoute, useNavigation} from '@react-navigation/native';
-import BottomSheet from '../../utils/customComponents/customBottomSheet/BottomSheet';
-import LeftIcon from '../../assets/icons/chevron-left.png';
 import Button from '../../utils/customComponents/customButton/Button';
 import {useDispatch} from 'react-redux';
 import Toast from 'react-native-toast-message';
 import {placeOrder} from '../../redux/slices/orderSlice';
 import {removeAllFromCart} from '../../redux/slices/cartSlice';
+import LeftIcon from '../../assets/icons/chevron-left.png';
+import BottomSheet from '../../utils/customComponents/customBottomSheet/BottomSheet';
+import CustomModal from '../../utils/customModals/CustomModal';
 
 const {width, height} = Dimensions.get('screen');
+
+const paymentIcons = {
+  JazzCash: require('../../assets/paymentMethodIcons/jazzcash-payment-method.png'),
+  EasyPaisa: require('../../assets/paymentMethodIcons/easypaisa-payment-method.png'),
+  CashOnDelivery: require('../../assets/paymentMethodIcons/cash-on-delivery-payment-method.png'),
+};
 
 const CheckOut = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const {cartItems, userDetails, totalAmount, shippingFee} = route.params;
-  const [isSheetVisible, setIsSheetVisible] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState('JazzCash');
+  const [isSheetVisible, setIsSheetVisible] = useState(false);
+  const [showPaymentInfoModal, setShowPaymentInfoModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const paymentAnim = new Animated.Value(0);
 
-  console.log('CheckOut Screen Rendered');
-  console.log('Route Params:', {
-    cartItems,
-    userDetails,
-    totalAmount,
-    shippingFee,
-  });
-
-  const paymentIcons = {
-    JazzCash: require('../../assets/paymentMethodIcons/jazzcash-payment-method.png'),
-    EasyPaisa: require('../../assets/paymentMethodIcons/easypaisa-payment-method.png'),
-    CashOnDelivery: require('../../assets/paymentMethodIcons/cash-on-delivery-payment-method.png'),
-  };
-
-  const scaleAnim = new Animated.Value(1);
-
-  const handleSelection = method => {
-    console.log('Payment method selected:', method);
-    Animated.sequence([
-      Animated.timing(scaleAnim, {
-        toValue: 1.05,
-        duration: 150,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }),
-      Animated.timing(scaleAnim, {
-        toValue: 1,
-        duration: 150,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }),
-    ]).start();
-
-    setSelectedMethod(method);
-  };
+  const paymentMethods = [
+    {
+      id: 'JazzCash',
+      name: 'JazzCash (+92-3090207411)',
+      icon: paymentIcons.JazzCash,
+    },
+    {
+      id: 'EasyPaisa',
+      name: 'EasyPaisa (+92-3147718070)',
+      icon: paymentIcons.EasyPaisa,
+    },
+    {
+      id: 'CashOnDelivery',
+      name: 'Cash on Delivery',
+      icon: paymentIcons.CashOnDelivery,
+    },
+  ];
 
   const handlePlaceOrder = async () => {
     console.log('handlePlaceOrder: Starting order process...');
@@ -170,210 +160,152 @@ const CheckOut = () => {
   );
 
   return (
-    <SafeAreaView
-      style={[globalStyles.container, {backgroundColor: theme.colors.white}]}>
-      <View style={styles.headerContainer}>
-        <Header
-          logo={require('../../assets/splashScreen/splash-logo.png')}
-          title={'CoffeeSpot'}
-          leftIcon={LeftIcon}
-          onPressLeft={() => navigation.goBack()}
-          transparent
-        />
-      </View>
+    <SafeAreaView style={globalStyles.container}>
+      <Header
+        logo={require('../../assets/splashScreen/splash-logo.png')}
+        title="Coffee Spot"
+        leftIcon={LeftIcon}
+        onPressLeft={() => navigation.goBack()}
+      />
 
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.primarySectionContainer}>
-          {/* Customer Details Section */}
-          <View style={styles.sectionContainer}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Customer Details</Text>
-            </View>
-            <View style={styles.detailContainer}>
-              <View style={styles.userInfoContainer}>
-                <View style={styles.infoRow}>
-                  <View style={styles.iconContainer}>
-                    <Ionicons
-                      name="person"
-                      size={width * 0.054}
-                      color={theme.colors.primary}
-                    />
-                  </View>
-                  <View style={styles.infoTextContainer}>
-                    <Text style={styles.infoText}>
-                      {userDetails?.userName || 'No Name'}
-                    </Text>
-                  </View>
-                </View>
-
-                <View style={styles.infoRow}>
-                  <View style={styles.iconContainer}>
-                    <Ionicons
-                      name="call"
-                      size={width * 0.054}
-                      color={theme.colors.primary}
-                    />
-                  </View>
-                  <View style={styles.infoTextContainer}>
-                    <Text style={styles.infoText}>
-                      {userDetails?.phone || 'No Phone'}
-                    </Text>
-                  </View>
-                </View>
-
-                <View style={styles.infoRow}>
-                  <View style={styles.iconContainer}>
-                    <Ionicons
-                      name="map"
-                      size={width * 0.054}
-                      color={theme.colors.primary}
-                    />
-                  </View>
-                  <View style={styles.infoTextContainer}>
-                    <Text style={styles.infoText}>
-                      {userDetails?.address || 'No Address'}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            </View>
-          </View>
-
-          {/* Order Summary Section */}
-          <View style={styles.sectionContainer}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Order Summary</Text>
-            </View>
-            <View style={styles.detailContainer}>
-              <View style={styles.summaryContainer}>
-                <View style={styles.infoRow}>
-                  <View style={styles.iconContainer}>
-                    <Ionicons
-                      name="cash"
-                      size={width * 0.054}
-                      color={theme.colors.primary}
-                    />
-                  </View>
-                  <View style={styles.infoTextContainer}>
-                    <Text style={styles.infoText}>Price</Text>
-                    <Text style={styles.infoText}>PKR {subtotal}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.infoRow}>
-                  <View style={styles.iconContainer}>
-                    <Ionicons
-                      name="cube"
-                      size={width * 0.054}
-                      color={theme.colors.primary}
-                    />
-                  </View>
-                  <View style={styles.infoTextContainer}>
-                    <Text style={styles.infoText}>Shipping Fee</Text>
-                    <Text style={styles.infoText}>PKR {shippingFee}</Text>
-                  </View>
-                </View>
-
-                <View style={[globalStyles.divider]} />
-
-                <View style={styles.infoRow}>
-                  <View style={styles.iconContainer}>
-                    <Ionicons
-                      name="cash"
-                      size={width * 0.054}
-                      color={theme.colors.primary}
-                    />
-                  </View>
-                  <View style={styles.infoTextContainer}>
-                    <Text style={styles.infoText}>Total Payment</Text>
-                    <Text style={styles.infoText}>
-                      PKR {subtotal + shippingFee}
-                    </Text>
-                  </View>
-
-                  <View style={styles.infoRow}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        console.log('Viewing order details');
-                        setIsSheetVisible(true);
-                      }}>
-                      <View style={styles.orderDetailsContainer}>
-                        <Text style={styles.orderDetailsText}>Details</Text>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
-            </View>
-          </View>
-
-          {/* Payment Methods Section */}
-          <View style={styles.sectionContainer}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Payment Methods</Text>
-            </View>
-            <View style={styles.detailContainer}>
-              <View style={styles.paymentMethodContainer}>
-                {['JazzCash', 'EasyPaisa', 'CashOnDelivery'].map(method => (
-                  <TouchableOpacity
-                    key={method}
-                    style={[
-                      styles.paymentMethodRow,
-                      selectedMethod === method && styles.selectedMethod,
-                    ]}
-                    onPress={() => handleSelection(method)}
-                    activeOpacity={0.8}>
-                    <Animated.View
-                      style={[
-                        styles.imgContainer,
-                        {transform: [{scale: scaleAnim}]},
-                      ]}>
-                      <Image source={paymentIcons[method]} style={styles.img} />
-                    </Animated.View>
-                    <View style={styles.paymentMethodContainer}>
-                      <Text style={styles.paymentMethod}>{method}</Text>
-                    </View>
-                    <View style={styles.paymentMethodContainer}>
-                      <Text style={styles.paymentMethod}>
-                        {method === 'JazzCash'
-                          ? '+923090207411'
-                          : method === 'EasyPaisa'
-                          ? '+923147718070'
-                          : method === 'CashOnDelivery'
-                          ? ''
-                          : 'N/A'}
-                      </Text>
-                    </View>
-                    {selectedMethod === method && (
-                      <Ionicons
-                        name="checkmark-circle"
-                        size={24}
-                        color={theme.colors.primary}
-                      />
-                    )}
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-          </View>
-
-          {/* Confirm Order Button */}
-          <View style={styles.btnContainer}>
-            <Button
-              title={loading ? 'Processing' : 'Confirm Order'}
-              backgroundColor={theme.colors.primary}
-              textColor={theme.colors.white}
-              onPress={handlePlaceOrder}
-              disabled={loading}
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Feather
+              name="truck"
+              size={width * 0.06}
+              color={theme.colors.primary}
             />
+            <Text style={styles.sectionTitle}>Delivery To</Text>
+          </View>
+          <View style={styles.deliveryInfo}>
+            <View style={styles.iconContainer}>
+              <Feather
+                name="map-pin"
+                size={width * 0.06}
+                color={theme.colors.primary}
+              />
+            </View>
+            <View style={styles.addressContainer}>
+              <Text style={styles.addressText}>{userDetails.address}</Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Feather
+              name="credit-card"
+              size={width * 0.06}
+              color={theme.colors.primary}
+            />
+            <Text style={styles.sectionTitle}>Payment Method</Text>
+            <TouchableOpacity
+              activeOpacity={0.6}
+              onPress={() => setShowPaymentInfoModal(true)}>
+              <Feather
+                name="info"
+                size={width * 0.06}
+                color={theme.colors.primary}
+              />
+            </TouchableOpacity>
+          </View>
+          <Animated.View style={styles.paymentMethods}>
+            {paymentMethods.map(method => (
+              <TouchableOpacity
+                key={method.id}
+                style={[
+                  styles.paymentMethod,
+                  selectedMethod === method.id && styles.selectedPaymentMethod,
+                ]}
+                onPress={() => {
+                  Animated.timing(paymentAnim, {
+                    toValue: 1,
+                    duration: 300,
+                    useNativeDriver: true,
+                  }).start(() => {
+                    setSelectedMethod(method.id);
+                    paymentAnim.setValue(0);
+                  });
+                }}>
+                <Image
+                  source={method.icon}
+                  style={styles.paymentIcon}
+                  resizeMode="contain"
+                />
+                <Text style={styles.paymentMethodText}>{method.name}</Text>
+                {selectedMethod === method.id && (
+                  <Feather
+                    name="check-circle"
+                    size={width * 0.06}
+                    color={theme.colors.primary}
+                    style={styles.checkIcon}
+                  />
+                )}
+              </TouchableOpacity>
+            ))}
+          </Animated.View>
+        </View>
+
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Feather
+              name="clipboard"
+              size={width * 0.06}
+              color={theme.colors.primary}
+            />
+            <Text style={styles.sectionTitle}>Order Summary</Text>
+            <TouchableOpacity
+              activeOpacity={0.6}
+              onPress={() => setIsSheetVisible(true)}>
+              <Feather
+                name="info"
+                size={width * 0.06}
+                color={theme.colors.primary}
+              />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.orderSummary}>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Subtotal</Text>
+              <Text style={styles.summaryValue}>PKR {subtotal}</Text>
+            </View>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Delivery Fee</Text>
+              <Text style={styles.summaryValue}>PKR {shippingFee}</Text>
+            </View>
+            <View style={styles.divider} />
+            <View style={styles.summaryRow}>
+              <Text style={styles.totalLabel}>Total</Text>
+              <Text style={styles.totalValue}>
+                PKR {subtotal + Number(shippingFee)}
+              </Text>
+            </View>
           </View>
         </View>
       </ScrollView>
 
+      <View style={styles.footer}>
+        <Button
+          onPress={handlePlaceOrder}
+          title={loading ? 'Placing Order...' : 'Place Order'}
+          backgroundColor={theme.colors.primary}
+          textColor={theme.colors.white}
+          disabled={!cartItems.length || loading}
+          width={width * 0.94}
+        />
+      </View>
+
+      <CustomModal
+        visible={showPaymentInfoModal}
+        onClose={() => setShowPaymentInfoModal(false)}
+        title="Payment Method Information"
+        contentList={paymentMethods}
+      />
+
       <BottomSheet
         visible={isSheetVisible}
         onClose={() => {
-          console.log('Closing order details bottom sheet');
           setIsSheetVisible(false);
         }}
         cartItems={cartItems}
@@ -385,107 +317,138 @@ const CheckOut = () => {
 export default CheckOut;
 
 const styles = StyleSheet.create({
-  primarySectionContainer: {
-    padding: height * 0.014,
-    gap: theme.gap(2),
+  container: {
+    flex: 1,
+    padding: height * 0.02,
+    backgroundColor: theme.colors.white,
   },
 
-  sectionContainer: {
-    borderWidth: 2,
-    borderColor: theme.colors.primary,
-    padding: height * 0.014,
-    borderRadius: theme.borderRadius.large,
+  section: {
+    marginBottom: height * 0.03,
+  },
+
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: height * 0.01,
+    gap: theme.gap(1),
   },
 
   sectionTitle: {
-    fontSize: theme.typography.fontSize.lg,
-    fontFamily: theme.typography.fontFamilySemiBold,
+    fontSize: theme.typography.fontSize.md,
+    fontFamily: theme.typography.poppins.bold,
     color: theme.colors.dark,
-    marginBottom: height * 0.02,
   },
 
-  detailContainer: {
-    flexDirection: 'column',
-    gap: theme.gap(2),
+  deliveryInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: height * 0.015,
+    backgroundColor: '#D9CBB5',
+    borderRadius: theme.borderRadius.large,
   },
 
   iconContainer: {
+    backgroundColor: '#C1A97B',
     padding: height * 0.01,
     borderRadius: theme.borderRadius.circle,
-    backgroundColor: 'rgba(125, 100, 195, 0.2)',
   },
 
-  userInfoContainer: {
-    flexDirection: 'column',
-    gap: theme.gap(2),
+  addressContainer: {
+    flex: 1,
+    marginLeft: width * 0.04,
   },
 
-  summaryContainer: {
-    flexDirection: 'column',
-    gap: theme.gap(2),
-  },
-
-  infoRow: {
-    width: width * 0.7,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.gap(2),
-  },
-
-  infoTextContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.gap(2),
-  },
-
-  infoText: {
-    fontSize: theme.typography.fontSize.sm,
-    fontFamily: theme.typography.poppins.regular,
+  addressText: {
+    fontSize: width * 0.04,
+    fontFamily: theme.typography.poppins.semiBold,
     color: theme.colors.dark,
   },
 
-  orderDetailsText: {
-    fontSize: theme.typography.fontSize.sm,
-    fontFamily: theme.typography.fontFamilyBold,
-    color: theme.colors.primary,
-  },
-
-  paymentMethodRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: height * 0.01,
-    backgroundColor: theme.colors.white,
-    borderRadius: theme.borderRadius.large,
-    marginVertical: height * 0.014,
-  },
-
-  imgContainer: {
-    width: width * 0.14,
-    height: width * 0.12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  img: {
-    width: width * 0.14,
-    height: width * 0.14,
-    resizeMode: 'contain',
-  },
-
-  selectedMethod: {
-    borderWidth: 2,
-    borderColor: theme.colors.primary,
-  },
-
-  paymentMethodContainer: {
-    flex: 1,
+  paymentMethods: {
+    borderRadius: theme.borderRadius.medium,
+    overflow: 'hidden',
   },
 
   paymentMethod: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: height * 0.018,
+    backgroundColor: '#F7EFD2',
+    marginBottom: height * 0.012,
+    borderRadius: theme.borderRadius.large,
+  },
+
+  selectedPaymentMethod: {
+    borderWidth: 2,
+    borderColor: theme.colors.primary,
+    backgroundColor: '#E9D8A6',
+  },
+
+  paymentIcon: {
+    width: width * 0.08,
+    height: height * 0.04,
+  },
+
+  paymentMethodText: {
+    marginLeft: width * 0.04,
     fontSize: theme.typography.fontSize.sm,
-    fontFamily: theme.typography.fontFamilySemiBold,
-    color: theme.colors.textPrimary,
-    textAlign: 'center',
-    width: width * 0.34,
+    fontFamily: theme.typography.poppins.medium,
+    color: theme.colors.dark,
+    flex: 1,
+  },
+
+  checkIcon: {
+    marginLeft: 'auto',
+  },
+
+  orderSummary: {
+    backgroundColor: '#FFF2DC',
+    borderRadius: theme.borderRadius.large,
+    padding: height * 0.015,
+  },
+
+  summaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: height * 0.008,
+  },
+
+  summaryLabel: {
+    fontSize: theme.typography.fontSize.sm,
+    fontFamily: theme.typography.poppins.medium,
+    color: '#7B6F5E',
+  },
+
+  summaryValue: {
+    fontSize: theme.typography.fontSize.sm,
+    fontFamily: theme.typography.poppins.medium,
+    color: '#40342D',
+  },
+
+  divider: {
+    height: 1,
+    backgroundColor: theme.colors.primary,
+    marginVertical: height * 0.012,
+  },
+
+  totalLabel: {
+    fontSize: theme.typography.fontSize.md,
+    fontFamily: theme.typography.poppins.bold,
+    color: '#40342D',
+  },
+
+  totalValue: {
+    fontSize: theme.typography.fontSize.md,
+    fontFamily: theme.typography.poppins.medium,
+    color: theme.colors.primary,
+  },
+
+  footer: {
+    padding: height * 0.01,
+    borderTopColor: theme.colors.tertiary,
+    borderTopWidth: 1,
+    alignItems: 'center',
+    backgroundColor: '#FDF6EC',
   },
 });

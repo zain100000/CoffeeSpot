@@ -83,6 +83,53 @@ export const changePassword = createAsyncThunk(
   },
 );
 
+export const deleteAccount = createAsyncThunk(
+  'user/deleteAccount',
+  async (userId, {rejectWithValue, dispatch}) => {
+    try {
+      console.log('[deleteAccount] Starting deletion for user:', userId);
+      const token = await AsyncStorage.getItem('authToken');
+
+      if (!token) {
+        console.error('[deleteAccount] No auth token found');
+        throw new Error('Authentication required');
+      }
+
+      console.log(
+        '[deleteAccount] Making request to:',
+        `${BASE_URL}/user/delete-user/${userId}`,
+      );
+      const response = await axios.delete(
+        `${BASE_URL}/user/delete-user/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      console.log('[deleteAccount] Response:', response.data);
+
+      if (!response.data.success) {
+        throw new Error(response.data.message || 'Deletion failed');
+      }
+
+      console.log('[deleteAccount] Clearing local data');
+      await AsyncStorage.multiRemove(['authToken', 'userData']);
+      dispatch(clearUser());
+
+      return response.data;
+    } catch (error) {
+      console.error('[deleteAccount] Error:', {
+        message: error.message,
+        response: error.response?.data,
+        stack: error.stack,
+      });
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  },
+);
+
 const userSlice = createSlice({
   name: 'user',
   initialState: {
@@ -119,6 +166,18 @@ const userSlice = createSlice({
         state.user = action.payload;
       })
       .addCase(updateUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(deleteAccount.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteAccount.fulfilled, state => {
+        state.loading = false;
+        state.user = null; // Clear user from state
+      })
+      .addCase(deleteAccount.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -24,6 +24,7 @@ const Dashboard = () => {
     }
   }, [dispatch, user?.id]);
 
+  // Product statistics
   const { totalProducts, totalStock, outOfStock } = products.reduce(
     (acc, product) => {
       acc.totalProducts++;
@@ -34,32 +35,63 @@ const Dashboard = () => {
     { totalProducts: 0, totalStock: 0, outOfStock: 0 }
   );
 
+  // Review statistics
   const totalReviews = reviews.length;
   const avgRating =
     reviews.reduce((acc, review) => acc + (review.rating || 0), 0) /
     (totalReviews || 1);
 
+  // Order statistics with new enums
   const {
-    pending: pendingOrders,
-    processing: processingOrders,
-    delivered: deliveredOrders,
-    cancelled: cancelledOrders,
+    orderReceived: orderReceivedCount,
+    paymentConfirmed: paymentConfirmedCount,
+    preparing: preparingCount,
+    readyForPickup: readyForPickupCount,
+    pickedUp: pickedUpCount,
+    completed: completedCount,
+    cancelled: cancelledCount,
+    refunded: refundedCount,
     total: totalOrders,
   } = orderList.reduce(
     (acc, order) => {
-      if (order.status === "PENDING") acc.pending++;
-      else if (order.status === "PROCESSING") acc.processing++;
-      else if (order.status === "DELIVERED") acc.delivered++;
-      else if (order.status === "CANCELLED") acc.cancelled++;
-
+      switch(order.status) {
+        case "ORDER_RECEIVED":
+          acc.orderReceived++;
+          break;
+        case "PAYMENT_CONFIRMED":
+          acc.paymentConfirmed++;
+          break;
+        case "PREPARING":
+          acc.preparing++;
+          break;
+        case "READY_FOR_PICKUP":
+          acc.readyForPickup++;
+          break;
+        case "PICKED_UP":
+          acc.pickedUp++;
+          break;
+        case "COMPLETED":
+          acc.completed++;
+          break;
+        case "CANCELLED":
+          acc.cancelled++;
+          break;
+        case "REFUNDED":
+          acc.refunded++;
+          break;
+      }
       acc.total++;
       return acc;
     },
     {
-      pending: 0,
-      processing: 0,
-      delivered: 0,
+      orderReceived: 0,
+      paymentConfirmed: 0,
+      preparing: 0,
+      readyForPickup: 0,
+      pickedUp: 0,
+      completed: 0,
       cancelled: 0,
+      refunded: 0,
       total: 0,
     }
   );
@@ -152,7 +184,7 @@ const Dashboard = () => {
               }
               stats={[
                 { label: "Total", value: totalOrders },
-                { label: "Pending", value: pendingOrders },
+                { label: "New Orders", value: orderReceivedCount },
               ]}
               bgClass="bg-white"
               textClass="text-dark"
@@ -170,20 +202,36 @@ const Dashboard = () => {
               <div className="card-body">
                 <div className="d-flex flex-column gap-3">
                   <div className="d-flex justify-content-between">
-                    <span>Pending Orders</span>
-                    <span className="fw-bold">{pendingOrders}</span>
+                    <span>Order Received</span>
+                    <span className="fw-bold">{orderReceivedCount}</span>
                   </div>
                   <div className="d-flex justify-content-between">
-                    <span>Processing Orders</span>
-                    <span className="fw-bold">{processingOrders}</span>
+                    <span>Payment Confirmed</span>
+                    <span className="fw-bold">{paymentConfirmedCount}</span>
                   </div>
                   <div className="d-flex justify-content-between">
-                    <span>Delivered Orders</span>
-                    <span className="fw-bold">{deliveredOrders}</span>
+                    <span>Preparing</span>
+                    <span className="fw-bold">{preparingCount}</span>
                   </div>
                   <div className="d-flex justify-content-between">
-                    <span>Cancelled Orders</span>
-                    <span className="fw-bold">{cancelledOrders}</span>
+                    <span>Ready for Pickup</span>
+                    <span className="fw-bold">{readyForPickupCount}</span>
+                  </div>
+                  <div className="d-flex justify-content-between">
+                    <span>Picked Up</span>
+                    <span className="fw-bold">{pickedUpCount}</span>
+                  </div>
+                  <div className="d-flex justify-content-between">
+                    <span>Completed</span>
+                    <span className="fw-bold">{completedCount}</span>
+                  </div>
+                  <div className="d-flex justify-content-between">
+                    <span>Cancelled</span>
+                    <span className="fw-bold">{cancelledCount}</span>
+                  </div>
+                  <div className="d-flex justify-content-between">
+                    <span>Refunded</span>
+                    <span className="fw-bold">{refundedCount}</span>
                   </div>
                 </div>
               </div>

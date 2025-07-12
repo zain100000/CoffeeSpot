@@ -28,6 +28,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import Button from '../../utils/customComponents/customButton/Button';
 import {useNavigation} from '@react-navigation/native';
 import LeftIcon from '../../assets/icons/chevron-left.png';
+import LinearGradient from 'react-native-linear-gradient';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -109,7 +110,7 @@ const Cart = () => {
     if (!cartItems.length) return;
 
     const formattedItems = cartItems.map(item => ({
-      product: item.productId._id, // Changed from productId to product
+      product: item.productId._id,
       title: item.productId.title,
       quantity: item.quantity,
       unitPrice: item.unitPrice,
@@ -139,94 +140,106 @@ const Cart = () => {
   const totalAmount = itemTotal + shippingFee;
 
   return (
-    <SafeAreaView
-      style={[globalStyles.container, {backgroundColor: theme.colors.white}]}>
-      <View style={styles.headerContainer}>
-        <Header
-          logo={require('../../assets/splashScreen/splash-logo.png')}
-          title={'CoffeeSpot'}
-          leftIcon={LeftIcon}
-          onPressLeft={() => navigation.goBack()}
-          transparent
-        />
-      </View>
-
-      {loading && !removingAll ? (
-        <View style={styles.loaderContainer}>
-          <Loader />
-        </View>
-      ) : cartItems?.length > 0 ? (
-        <FlatList
-          data={cartItems}
-          keyExtractor={item => item._id.toString()}
-          renderItem={({item}) => (
-            <CartCard
-              title={item.productId.title}
-              price={item.unitPrice}
-              imageUrl={item.productId.productImage}
-              onRemove={() => handleCompleteRemove(item.productId._id)}
-              onIncrease={() => handleAddToCart(item.productId._id)}
-              onDecrease={() => handleRemoveFromCart(item.productId._id)}
-              quantity={item.quantity}
-            />
-          )}
-          contentContainerStyle={styles.listContainer}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-          }
-        />
-      ) : (
-        <ScrollView
-          contentContainerStyle={styles.emptyContainer}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-          }>
-          <Animated.View
-            style={[
-              {opacity: fadeAnim, transform: [{translateY: bounceAnim}]},
-            ]}>
-            <View style={{alignSelf: 'center'}}>
-              <Feather
-                name="shopping-cart"
-                size={width * 0.28}
-                color={theme.colors.primary}
-              />
-            </View>
-            <Text style={styles.emptyText}>Cart Is Empty</Text>
-          </Animated.View>
-        </ScrollView>
-      )}
-      <View style={styles.fixedBottomContainer}>
-        <View style={styles.bottomContainer}>
-          <View style={styles.priceContainer}>
-            <Text style={styles.titleText}>Price</Text>
-            <Text style={styles.amountText}>PKR {itemTotal}</Text>
-          </View>
-
-          <View style={styles.shippingFeeContainer}>
-            <Text style={styles.titleText}>Shipping</Text>
-            <Text style={styles.amountText}>PKR {shippingFee}</Text>
-          </View>
-        </View>
-        <View style={styles.btnContainer}>
-          <Button
-            title="Checkout"
-            backgroundColor={
-              cartItems.length ? theme.colors.primary : theme.colors.gray
-            }
-            textColor={theme.colors.white}
-            onPress={handleNavigateCheckOut}
-            disabled={!cartItems.length}
+    <LinearGradient
+      colors={[theme.colors.primary, theme.colors.tertiary]}
+      style={styles.gradientBackground}>
+      <SafeAreaView style={globalStyles.container}>
+        <View style={styles.headerContainer}>
+          <Header
+            logo={require('../../assets/splashScreen/splash-logo.png')}
+            title="Shopping Cart"            
           />
         </View>
-      </View>
-    </SafeAreaView>
+
+        {loading && !removingAll ? (
+          <View style={styles.loaderContainer}>
+            <Loader />
+          </View>
+        ) : cartItems?.length > 0 ? (
+          <FlatList
+            data={cartItems}
+            keyExtractor={item => item._id.toString()}
+            renderItem={({item}) => (
+              <CartCard
+                title={item.productId.title}
+                price={item.unitPrice}
+                imageUrl={item.productId.productImage}
+                onRemove={() => handleCompleteRemove(item.productId._id)}
+                onIncrease={() => handleAddToCart(item.productId._id)}
+                onDecrease={() => handleRemoveFromCart(item.productId._id)}
+                quantity={item.quantity}
+              />
+            )}
+            contentContainerStyle={styles.listContainer}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+              />
+            }
+          />
+        ) : (
+          <ScrollView
+            contentContainerStyle={styles.emptyContainer}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+              />
+            }>
+            <Animated.View
+              style={[
+                {opacity: fadeAnim, transform: [{translateY: bounceAnim}]},
+              ]}>
+              <View style={{alignSelf: 'center'}}>
+                <Feather
+                  name="shopping-cart"
+                  size={width * 0.28}
+                  color={theme.colors.white}
+                />
+              </View>
+              <Text style={styles.emptyText}>Cart Is Empty</Text>
+            </Animated.View>
+          </ScrollView>
+        )}
+
+        <View style={styles.fixedBottomContainer}>
+          <View style={styles.bottomContainer}>
+            <View style={styles.priceContainer}>
+              <Text style={styles.titleText}>Price</Text>
+              <Text style={styles.amountText}>PKR {itemTotal}</Text>
+            </View>
+
+            <View style={styles.shippingFeeContainer}>
+              <Text style={styles.titleText}>Shipping</Text>
+              <Text style={styles.amountText}>PKR {shippingFee}</Text>
+            </View>
+          </View>
+
+          <View style={styles.btnContainer}>
+            <Button
+              title="Checkout"
+              backgroundColor={
+                cartItems.length ? theme.colors.primary : theme.colors.gray
+              }
+              textColor={theme.colors.white}
+              onPress={handleNavigateCheckOut}
+              disabled={!cartItems.length}
+            />
+          </View>
+        </View>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 export default Cart;
 
 const styles = StyleSheet.create({
+  gradientBackground: {
+    flex: 1,
+  },
+
   primaryContainer: {
     flex: 1,
   },
@@ -247,7 +260,7 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: theme.typography.fontSize.xl,
     fontFamily: theme.typography.poppins.semiBold,
-    color: theme.colors.primary,
+    color: theme.colors.white,
     marginTop: height * 0.02,
   },
 

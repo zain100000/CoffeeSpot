@@ -78,8 +78,8 @@ const styles = StyleSheet.create({
   },
 
   imgContainer: {
-    width: width * 0.18,
-    height: width * 0.18,
+    width: width * 0.12,
+    height: width * 0.12,
     borderRadius: theme.borderRadius.circle,
     overflow: 'hidden',
   },
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   },
 
   name: {
-    fontSize: theme.typography.fontSize.lg,
+    fontSize: theme.typography.fontSize.sm,
     fontFamily: theme.typography.fontFamilyBold,
     color: theme.colors.dark,
   },

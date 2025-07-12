@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    marginVertical: height * 0.01,
+    marginVertical: height * 0.012,
     gap: theme.gap(2),
   },
 
@@ -104,12 +104,12 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: theme.colors.primary,
     borderRadius: theme.borderRadius.circle,
-    padding: height * 0.004,
+    padding: height * 0.0042,
   },
 
   cardTitle: {
-    fontSize: theme.typography.fontSize.md,
-    fontFamily: theme.typography.fontFamilySemiBold,
+    fontSize: theme.typography.fontSize.sm,
+    fontFamily: theme.typography.poppins.regular,
     top: height * 0.002,
   },
 });

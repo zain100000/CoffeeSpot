@@ -20,8 +20,6 @@ const Header = ({
   onPressLeft,
   rightIcon,
   onPressRight,
-  profile,
-  onPressProfile,
 }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.95)).current;
@@ -58,10 +56,14 @@ const Header = ({
         <View style={styles.leftGroup}>
           {leftIcon && (
             <TouchableOpacity onPress={onPressLeft} activeOpacity={0.8}>
-              <Image
-                source={leftIcon}
-                style={[styles.icon, {tintColor: theme.colors.white}]}
-              />
+              {React.isValidElement(leftIcon) ? (
+                leftIcon
+              ) : (
+                <Image
+                  source={leftIcon}
+                  style={[styles.icon, {tintColor: theme.colors.white}]}
+                />
+              )}
             </TouchableOpacity>
           )}
         </View>
@@ -76,18 +78,14 @@ const Header = ({
         <View style={styles.rightGroup}>
           {rightIcon && (
             <TouchableOpacity onPress={onPressRight} activeOpacity={0.8}>
-              <Image
-                source={rightIcon}
-                style={[styles.icon, {tintColor: theme.colors.white}]}
-              />
-            </TouchableOpacity>
-          )}
-
-          {profile && (
-            <TouchableOpacity onPress={onPressProfile} activeOpacity={0.8}>
-              <View style={styles.profileWrapper}>
-                <Image source={profile} style={styles.profile} />
-              </View>
+              {React.isValidElement(rightIcon) ? (
+                rightIcon
+              ) : (
+                <Image
+                  source={rightIcon}
+                  style={[styles.icon, {tintColor: theme.colors.white}]}
+                />
+              )}
             </TouchableOpacity>
           )}
         </View>
@@ -150,16 +148,5 @@ const styles = StyleSheet.create({
     width: width * 0.06,
     height: width * 0.06,
     resizeMode: 'contain',
-  },
-
-  profileWrapper: {
-    position: 'relative',
-  },
-
-  profile: {
-    width: width * 0.1,
-    height: width * 0.1,
-    resizeMode: 'cover',
-    borderRadius: theme.borderRadius.circle,
   },
 });

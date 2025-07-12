@@ -12,11 +12,11 @@ import LottieView from 'lottie-react-native';
 import logoutAnimation from '../../assets/animations/logout.json';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
-import CustomModal from './CustomModal';
 import {theme} from '../../styles/theme';
 import {logoutUser} from '../../redux/slices/authSlice';
 import {useDispatch} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -24,14 +24,10 @@ const LogoutModal = ({visible, title, description, onClose}) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleLogout = async () => {
     setLoading(true);
-    setShowAuthModal(true);
 
     try {
       const resultAction = await dispatch(logoutUser()).unwrap();
@@ -39,33 +35,28 @@ const LogoutModal = ({visible, title, description, onClose}) => {
       if (resultAction.success) {
         await AsyncStorage.removeItem('authToken');
 
-        setTimeout(() => {
-          setShowAuthModal(false);
-          setShowSuccessModal(true);
+        Toast.show({
+          type: 'success',
+          text1: 'Logout Successful',
+          text2: 'You have been logout successfully',
+        });
 
-          setTimeout(() => {
-            setShowSuccessModal(false);
-            navigation.replace('Signin');
-          }, 2000);
+        setTimeout(() => {
+          navigation.replace('Signin');
         }, 2000);
       } else {
-        console.error(
-          'Logout failed:',
-          resultAction.message || 'Unknown error.',
-        );
-        setShowErrorModal(true);
-
-        setTimeout(() => {
-          setShowErrorModal(false);
-        }, 2000);
+        Toast.show({
+          type: 'error',
+          text1: 'Logout Failed',
+          text2: resultAction.message || 'Unknown error.',
+        });
       }
     } catch (error) {
-      console.error('Error during logout:', error);
-      setShowErrorModal(true);
-
-      setTimeout(() => {
-        setShowErrorModal(false);
-      }, 2000);
+      Toast.show({
+        type: 'error',
+        text1: 'Logout Error',
+        text2: error?.message || 'Something went wrong.',
+      });
     } finally {
       setLoading(false);
     }
@@ -131,30 +122,6 @@ const LogoutModal = ({visible, title, description, onClose}) => {
           </View>
         </View>
       </View>
-
-      <CustomModal
-        visible={showAuthModal}
-        title="Working!"
-        description="Please wait while we logging out"
-        animationSource={require('../../assets/animations/logout.json')}
-        onClose={() => setShowAuthModal(false)}
-      />
-
-      <CustomModal
-        visible={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
-        animationSource={require('../../assets/animations/success.json')}
-        title="Logout Successful!"
-        description="You have been logged out successfully."
-      />
-
-      <CustomModal
-        visible={showErrorModal}
-        onClose={() => setShowErrorModal(false)}
-        animationSource={require('../../assets/animations/error.json')}
-        title="Logout Failed"
-        description="There was an error during the logout."
-      />
     </Modal>
   );
 };
@@ -198,13 +165,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: width * 0.05,
     color: theme.colors.dark,
-    fontFamily: theme.typography.fontFamilyRegular,
+    fontFamily: theme.typography.poppins.regular,
   },
 
   descriptionText: {
     textAlign: 'center',
     color: theme.colors.secondary,
-    fontFamily: theme.typography.fontFamilyRegular,
+    fontFamily: theme.typography.poppins.regular,
     fontSize: width * 0.04,
     marginBottom: 20,
   },
@@ -242,14 +209,14 @@ const styles = StyleSheet.create({
     fontSize: width * 0.04,
     top: height * 0.0036,
     color: theme.colors.white,
-    fontFamily: theme.typography.fontFamilyRegular,
+    fontFamily: theme.typography.poppins.regular,
   },
 
   proceedText: {
     fontSize: width * 0.04,
     top: height * 0.0036,
     color: theme.colors.white,
-    fontFamily: theme.typography.fontFamilyRegular,
+    fontFamily: theme.typography.poppins.regular,
   },
 
   icon: {

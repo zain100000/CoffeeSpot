@@ -1,31 +1,28 @@
 import React, {useRef, useEffect} from 'react';
 import {
+  Modal,
   View,
   StyleSheet,
-  Modal,
   TouchableWithoutFeedback,
+  Animated,
   Dimensions,
   Text,
-  Animated,
-  Easing,
+  Image,
   TouchableOpacity,
+  ScrollView,
+  Easing,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Feather from 'react-native-vector-icons/Feather';
-import {theme} from '../../../styles/theme';
+import {theme} from '../../styles/theme';
 
 const {width, height} = Dimensions.get('screen');
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
-const BottomSheet = ({visible, onClose, cartItems}) => {
+const CustomModal = ({visible, onClose, title, contentList}) => {
   const slideAnim = useRef(new Animated.Value(height)).current;
   const backdropAnim = useRef(new Animated.Value(0)).current;
   const contentOpacity = useRef(new Animated.Value(0)).current;
-
-  const totalAmount = cartItems.reduce(
-    (total, item) => total + item.unitPrice * item.quantity,
-    0,
-  );
 
   useEffect(() => {
     if (visible) {
@@ -79,6 +76,10 @@ const BottomSheet = ({visible, onClose, cartItems}) => {
     outputRange: [0, 0.5],
   });
 
+  
+  const jazzCashIcon = contentList.find(item => item.id === 'JazzCash')?.icon;
+  const easyPaisaIcon = contentList.find(item => item.id === 'EasyPaisa')?.icon;
+
   return (
     <Modal transparent visible={visible} onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose}>
@@ -102,48 +103,52 @@ const BottomSheet = ({visible, onClose, cartItems}) => {
             ],
           },
         ]}>
+        {/* Close Icon */}
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Feather name="x" size={width * 0.054} color={theme.colors.error} />
+            <Feather name="x" size={24} color={theme.colors.error} />
           </TouchableOpacity>
         </View>
 
+        {/* Modal Content */}
         <Animated.View style={[styles.container, {opacity: contentOpacity}]}>
-          <Text style={styles.title}>Order Summary</Text>
+          <Text style={styles.title}>{title}</Text>
 
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Feather
-                name="shopping-bag"
-                size={20}
-                color={theme.colors.white}
-                style={styles.sectionIcon}
-              />
-              <Text style={styles.sectionLabel}>Your Items</Text>
-            </View>
-            {cartItems.map((item, index) => (
-              <View key={index} style={styles.itemRow}>
-                <View style={styles.itemContent}>
-                  <Text style={styles.itemText} numberOfLines={1}>
-                    {item.title}
-                  </Text>
-                  <Text style={styles.itemSubtext}>
-                    {item.quantity} × PKR {item.unitPrice.toLocaleString()}
-                  </Text>
-                </View>
-                <Text style={styles.itemPrice}>
-                  PKR {(item.unitPrice * item.quantity).toLocaleString()}
-                </Text>
+          <ScrollView
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={false}>
+            {/* Payment Info Banner */}
+            <View style={styles.paymentInfoBanner}>
+              <View style={styles.paymentIconsContainer}>
+                {jazzCashIcon && (
+                  <Image
+                    source={jazzCashIcon}
+                    style={styles.paymentInfoIcon}
+                    resizeMode="contain"
+                  />
+                )}
+                {easyPaisaIcon && (
+                  <Image
+                    source={easyPaisaIcon}
+                    style={styles.paymentInfoIcon}
+                    resizeMode="contain"
+                  />
+                )}
               </View>
-            ))}
-          </View>
+              <Text style={styles.paymentInfoText}>
+                JazzCash and EasyPaisa aren't connected to our app just yet —
+                but no worries! You can still make your payment manually through
+                the official apps.
+              </Text>
+            </View>
+          </ScrollView>
         </Animated.View>
       </AnimatedLinearGradient>
     </Modal>
   );
 };
 
-export default BottomSheet;
+export default CustomModal;
 
 const styles = StyleSheet.create({
   overlay: {
@@ -160,10 +165,10 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    height: height * 0.6,
+    height: height * 0.5, 
     borderTopLeftRadius: theme.borderRadius.large,
     borderTopRightRadius: theme.borderRadius.large,
-    paddingHorizontal: width * 0.04,
+    paddingHorizontal: width * 0.05,
     paddingTop: height * 0.03,
     overflow: 'hidden',
   },
@@ -191,59 +196,56 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: theme.typography.fontSize.xl,
-    fontFamily: theme.typography.poppins.semiBold,
+    fontSize: theme.typography.fontSize.lg,
+    fontFamily: theme.typography.poppins.bold,
     color: theme.colors.white,
     marginBottom: height * 0.02,
   },
 
-  section: {
-    marginBottom: height * 0.02,
+  content: {
+    paddingBottom: height * 0.02,
   },
 
-  sectionHeader: {
+  paymentInfoBanner: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: theme.borderRadius.medium,
+    padding: width * 0.04,
+    marginBottom: height * 0.03,
+  },
+
+  paymentIconsContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: height * 0.015,
   },
 
-  sectionIcon: {
-    marginRight: width * 0.02,
+  paymentInfoIcon: {
+    width: width * 0.12,
+    height: height * 0.06,
+    marginHorizontal: width * 0.02,
   },
 
-  sectionLabel: {
-    fontSize: theme.typography.fontSize.md,
-    fontFamily: theme.typography.poppins.medium,
-    color: theme.colors.white,
-  },
-
-  itemRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-
-  itemContent: {
-    flex: 1,
-    marginRight: width * 0.02,
-  },
-
-  itemText: {
-    fontSize: theme.typography.fontSize.sm,
-    fontFamily: theme.typography.poppins.medium,
-    color: theme.colors.white,
-  },
-
-  itemSubtext: {
-    fontSize: theme.typography.fontSize.sm,
+  paymentInfoText: {
+    fontSize: theme.typography.fontSize.xs,
     fontFamily: theme.typography.poppins.regular,
-    color: theme.colors.gray,
+    color: '#E0E0E0',
+    textAlign: 'center',
+    lineHeight: 18,
   },
 
-  itemPrice: {
-    fontSize: theme.typography.fontSize.sm,
-    fontFamily: theme.typography.poppins.semiBold,
-    color: theme.colors.white,
+  item: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: height * 0.018,
+  },
+
+  icon: {
+    width: width * 0.08,
+    height: height * 0.04,
+    marginRight: width * 0.04,
+  },
+
+  textContainer: {
+    flex: 1,
   },
 });

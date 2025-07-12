@@ -5,24 +5,24 @@ import CONFIG from '../config/Config';
 
 const {BASE_URL} = CONFIG;
 
-// Utility to fetch token
+// Utility to fetch bearer token
 const getToken = async rejectWithValue => {
   try {
     const token = await AsyncStorage.getItem('authToken');
     if (!token) throw new Error('User is not authenticated.');
     return token;
-  } catch (error) {
-    return rejectWithValue(error.message || 'Failed to fetch token.');
+  } catch (err) {
+    return rejectWithValue(err.message || 'Failed to fetch token.');
   }
 };
 
-// Add to cart
+// addToCart, removeFromCart, removeAllFromCart, getAllCartItems thunks
 export const addToCart = createAsyncThunk(
   'cart/addToCart',
   async ({productId}, {rejectWithValue}) => {
     try {
       const token = await getToken(rejectWithValue);
-      const response = await axios.post(
+      const {data} = await axios.post(
         `${BASE_URL}/cart/add-to-cart`,
         {productId},
         {
@@ -32,20 +32,20 @@ export const addToCart = createAsyncThunk(
           },
         },
       );
-      return response.data.cart;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
+      // always return an array
+      return Array.isArray(data.cart) ? data.cart : [];
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
     }
   },
 );
 
-// Remove one quantity from cart
 export const removeFromCart = createAsyncThunk(
   'cart/removeFromCart',
   async ({productId}, {rejectWithValue}) => {
     try {
       const token = await getToken(rejectWithValue);
-      const response = await axios.post(
+      const {data} = await axios.post(
         `${BASE_URL}/cart/remove-from-cart`,
         {productId},
         {
@@ -55,50 +55,43 @@ export const removeFromCart = createAsyncThunk(
           },
         },
       );
-      return response.data.cart;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
+      return Array.isArray(data.cart) ? data.cart : [];
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
     }
   },
 );
 
-// Remove all instances of one product
 export const removeAllFromCart = createAsyncThunk(
   'cart/removeAllFromCart',
   async ({productId}, {rejectWithValue}) => {
     try {
       const token = await getToken(rejectWithValue);
-      const response = await axios.delete(
-        `${BASE_URL}/cart/remove-all-cart-items`,
-        {
-          data: {productId},
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
+      await axios.delete(`${BASE_URL}/cart/remove-all-cart-items`, {
+        data: {productId},
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
-      );
-      return {productId};
-    } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
+      });
+      return productId;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
     }
   },
 );
 
-// Fetch all cart items
 export const getAllCartItems = createAsyncThunk(
   'cart/getAllCartItems',
   async (_, {rejectWithValue}) => {
     try {
       const token = await getToken(rejectWithValue);
-      const response = await axios.get(`${BASE_URL}/cart/get-all-cart-items`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const {data} = await axios.get(`${BASE_URL}/cart/get-all-cart-items`, {
+        headers: {Authorization: `Bearer ${token}`},
       });
-      return response.data.cart;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
+      return Array.isArray(data.cart) ? data.cart : [];
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
     }
   },
 );
@@ -113,75 +106,70 @@ const cartSlice = createSlice({
   reducers: {
     updateCartItem: (state, action) => {
       const {productId, quantity} = action.payload;
-      const itemIndex = state.cartItems.findIndex(
-        item => item.productId._id === productId,
+      const idx = state.cartItems.findIndex(
+        it => it.productId._id === productId,
       );
-      if (itemIndex !== -1) {
-        state.cartItems[itemIndex].quantity = quantity;
-      }
+      if (idx !== -1) state.cartItems[idx].quantity = quantity;
     },
   },
   extraReducers: builder => {
     builder
       // Add
-      .addCase(addToCart.pending, state => {
-        state.loading = true;
-        state.error = null;
+      .addCase(addToCart.pending, s => {
+        s.loading = true;
+        s.error = null;
       })
-      .addCase(addToCart.fulfilled, (state, action) => {
-        state.loading = false;
-        state.cartItems = Array.isArray(action.payload) ? action.payload : [];
+      .addCase(addToCart.fulfilled, (s, a) => {
+        s.loading = false;
+        s.cartItems = a.payload;
       })
-      .addCase(addToCart.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-
-      // Remove
-      .addCase(removeFromCart.pending, state => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(removeFromCart.fulfilled, (state, action) => {
-        state.loading = false;
-        state.cartItems = Array.isArray(action.payload) ? action.payload : [];
-      })
-      .addCase(removeFromCart.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
+      .addCase(addToCart.rejected, (s, a) => {
+        s.loading = false;
+        s.error = a.payload;
       })
 
-      // Remove All
-      .addCase(removeAllFromCart.pending, state => {
-        state.loading = true;
-        state.error = null;
+      // Remove one
+      .addCase(removeFromCart.pending, s => {
+        s.loading = true;
+        s.error = null;
       })
-      .addCase(removeAllFromCart.fulfilled, (state, action) => {
-        state.loading = false;
-        state.cartItems = state.cartItems.filter(
-          item => item.productId._id !== action.payload.productId,
-        );
+      .addCase(removeFromCart.fulfilled, (s, a) => {
+        s.loading = false;
+        s.cartItems = a.payload;
       })
-      .addCase(removeAllFromCart.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
+      .addCase(removeFromCart.rejected, (s, a) => {
+        s.loading = false;
+        s.error = a.payload;
       })
 
-      // Get All
-      .addCase(getAllCartItems.pending, state => {
-        state.loading = true;
+      // Remove all
+      .addCase(removeAllFromCart.pending, s => {
+        s.loading = true;
+        s.error = null;
       })
-      .addCase(getAllCartItems.fulfilled, (state, action) => {
-        state.loading = false;
-        state.cartItems = Array.isArray(action.payload) ? action.payload : [];
+      .addCase(removeAllFromCart.fulfilled, (s, a) => {
+        s.loading = false;
+        s.cartItems = s.cartItems.filter(it => it.productId._id !== a.payload);
       })
-      .addCase(getAllCartItems.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
+      .addCase(removeAllFromCart.rejected, (s, a) => {
+        s.loading = false;
+        s.error = a.payload;
+      })
+
+      // Get all
+      .addCase(getAllCartItems.pending, s => {
+        s.loading = true;
+      })
+      .addCase(getAllCartItems.fulfilled, (s, a) => {
+        s.loading = false;
+        s.cartItems = a.payload;
+      })
+      .addCase(getAllCartItems.rejected, (s, a) => {
+        s.loading = false;
+        s.error = a.payload;
       });
   },
 });
 
 export const {updateCartItem} = cartSlice.actions;
-
 export default cartSlice.reducer;

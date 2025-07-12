@@ -20,12 +20,12 @@ const App = () => {
           shadowOpacity: 0.15,
           shadowOffset: {width: 0, height: 4},
           shadowRadius: 6,
-          paddingHorizontal: width * 0.02,
+          paddingHorizontal: width * 0.012,
           flexDirection: 'row',
           alignItems: 'center',
         }}
         contentContainerStyle={{
-          paddingHorizontal: width * 0.02,
+          paddingHorizontal: width * 0.012,
           flex: 1,
         }}
         text1Style={{
@@ -60,12 +60,12 @@ const App = () => {
           shadowOpacity: 0.15,
           shadowOffset: {width: 0, height: 4},
           shadowRadius: 6,
-          paddingHorizontal: width * 0.02,
+          paddingHorizontal: width * 0.012,
           flexDirection: 'row',
           alignItems: 'center',
         }}
         contentContainerStyle={{
-          paddingHorizontal: width * 0.02,
+          paddingHorizontal: width * 0.012,
           flex: 1,
         }}
         text1Style={{

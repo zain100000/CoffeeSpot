@@ -9,6 +9,7 @@ import {
   ScrollView,
   TouchableOpacity,
   ImageBackground,
+  Image,
 } from 'react-native';
 import {theme} from '../../styles/theme';
 import {globalStyles} from '../../styles/globalStyles';
@@ -16,6 +17,7 @@ import Header from '../../utils/customComponents/customHeader/Header';
 import {useDispatch, useSelector} from 'react-redux';
 import {getUser} from '../../redux/slices/userSlice';
 import Feather from 'react-native-vector-icons/Feather';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {getAllProducts} from '../../redux/slices/productSlice';
 import ProductCard from '../../utils/customComponents/customCards/productCards/ProductCard';
 import {useNavigation} from '@react-navigation/native';
@@ -99,23 +101,26 @@ const Home = () => {
         return false;
       }
     });
-    navigation.navigate('CategoryProducts', {
+    navigation.navigate('Category_Products', {
       categoryId,
       products: chunkArray(categoryProducts, 2),
     });
   };
 
   return (
-    <SafeAreaView
-      style={[globalStyles.container, {backgroundColor: theme.colors.white}]}>
+    <LinearGradient
+      colors={[theme.colors.primary, theme.colors.tertiary]}
+      style={globalStyles.container}>
       <View style={styles.headerContainer}>
         <Header
           logo={require('../../assets/splashScreen/splash-logo.png')}
           title="CoffeeSpot"
-          profile={
-            userProfile?.profilePicture
-              ? {uri: userProfile.profilePicture}
-              : require('../../assets/placeholders/default-avatar.png')
+          rightIcon={
+            <FontAwesome5
+              name="headset"
+              size={width * 0.06}
+              color={theme.colors.white}
+            />
           }
         />
       </View>
@@ -129,15 +134,30 @@ const Home = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}>
           <View style={styles.greetingContainer}>
-            <Text style={styles.greetingTitle}>{greeting}!</Text>
-            <Text style={styles.greetingDescription}>
-              Let's get this Coffee!{' '}
-              <Feather
-                name={'coffee'}
-                size={width * 0.044}
-                color={theme.colors.primary}
-              />
-            </Text>
+            <View style={styles.greetingLeftContainer}>
+              <Text style={styles.greetingTitle}>{greeting}!</Text>
+              <Text style={styles.greetingDescription}>
+                Let's get this Coffee!{' '}
+                <Feather
+                  name={'coffee'}
+                  size={width * 0.044}
+                  color={theme.colors.white}
+                />
+              </Text>
+            </View>
+
+            <View style={styles.greetingRightContainer}>
+              <TouchableOpacity activeOpacity={0.8}>
+                <Image
+                  source={
+                    userProfile?.profilePicture
+                      ? {uri: userProfile.profilePicture}
+                      : require('../../assets/placeholders/default-avatar.png')
+                  }
+                  style={styles.profileImage}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <View style={styles.coffeeSection}>
@@ -184,7 +204,7 @@ const Home = () => {
           </View>
         </ScrollView>
       )}
-    </SafeAreaView>
+    </LinearGradient>
   );
 };
 
@@ -194,18 +214,28 @@ const styles = StyleSheet.create({
   greetingContainer: {
     marginTop: height * 0.04,
     paddingHorizontal: width * 0.06,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 
   greetingTitle: {
     fontSize: theme.typography.fontSize.lg,
     fontFamily: theme.typography.poppins.semiBold,
-    color: theme.colors.primary,
+    color: theme.colors.white,
   },
 
   greetingDescription: {
     fontSize: theme.typography.fontSize.sm,
     fontFamily: theme.typography.poppins.medium,
     color: theme.colors.tertiary,
+  },
+
+  profileImage: {
+    width: width * 0.16,
+    height: height * 0.076,
+    resizeMode: 'cover',
+    borderRadius: theme.borderRadius.circle,
   },
 
   sectionContainer: {

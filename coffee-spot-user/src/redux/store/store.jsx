@@ -11,7 +11,7 @@ import orderReducer from '../slices/orderSlice';
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['auth'],
+  whitelist: ['auth', 'cart'],
 };
 
 const rootReducer = combineReducers({

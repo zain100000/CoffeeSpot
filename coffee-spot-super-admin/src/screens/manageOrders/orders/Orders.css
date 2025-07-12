@@ -1,11 +1,12 @@
 @import url("../../../styles/globalStyles.css");
 
-/* ------------------------------ ORDER SCREEN CSS ----------------------------------- */
-/* ----------------------------------------------------------------------------------- */
-/* ----------------------------------------------------------------------------------- */
-/* ----------------------------------------------------------------------------------- */
-/* ----------------------------------------------------------------------------------- */
+/* --------------------------- ORDER SCREEN CSS ------------------- */
+/* ---------------------------------------------------------------- */
+/* ---------------------------------------------------------------- */
+/* ---------------------------------------------------------------- */
+/* ---------------------------------------------------------------- */
 
+/* Container and Layout */
 #orders .orders-container {
   padding: 28px;
   background: var(--white);
@@ -22,15 +23,6 @@
   gap: 16px;
 }
 
-#orders .orders-title {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--primary);
-  margin: 0;
-  padding-left: 10px;
-  border-left: 4px solid var(--primary);
-}
-
 #orders .loader-container {
   display: flex;
   justify-content: center;
@@ -42,6 +34,44 @@
   overflow-x: auto;
 }
 
+/* Typography */
+#orders .orders-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0;
+  padding-left: 10px;
+  border-left: 4px solid var(--primary);
+}
+
+#orders .no-orders-found {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 24px;
+  background-color: var(--tertiary);
+  border-radius: 10px;
+  margin-top: 20px;
+  box-shadow: 0 2px 6px rgba(198, 40, 40, 0.1);
+}
+
+#orders .no-orders-found i {
+  font-size: 30px;
+  color: var(--light-gray);
+}
+
+#orders .no-orders-found p {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Table Styles */
 #orders .orders-table {
   width: 100%;
   border-collapse: collapse;
@@ -75,6 +105,7 @@
   background-color: var(--light-bg);
 }
 
+/* Cell Specific Styles */
 #orders .order-id {
   font-weight: 600;
   color: var(--primary);
@@ -85,57 +116,101 @@
   color: var(--text-primary);
 }
 
-#orders .payment-status .payment-badge {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 14px;
+/* Badge Styles */
+.status-badge,
+.payment-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
   font-weight: 500;
-}
-
-#orders .payment-status .payment-badge.pending {
-  background-color: var(--warning-light);
-  color: var(--warning-dark);
-}
-
-#orders .payment-status .payment-badge.paid {
-  background-color: var(--success-light);
-  color: var(--success-dark);
-}
-
-#orders .order-status .status-badge {
+  font-size: 0.8rem;
   display: inline-block;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 500;
 }
 
-#orders .order-status .status-badge.pending {
-  background-color: var(--warning-light);
-  color: var(--warning-dark);
+.status-badge {
+  color: white;
+  text-transform: capitalize;
 }
 
-#orders .order-status .status-badge.processing {
-  background-color: var(--info-light);
-  color: var(--info-dark);
+.payment-badge.paid {
+  background-color: #4caf50;
+  color: white;
 }
 
-#orders .order-status .status-badge.shipped {
-  background-color: var(--primary-light);
-  color: var(--primary-dark);
+.payment-badge.pending,
+.payment-badge.unpaid {
+  background-color: #ffa500;
+  color: white;
 }
 
-#orders .order-status .status-badge.delivered {
-  background-color: var(--success-light);
-  color: var(--success-dark);
+/* Status Colors */
+.status-badge[style*="ORDER_RECEIVED"],
+.modal-btn-order_received {
+  background-color: #ffa500;
+  color: white;
+
 }
 
-#orders .order-status .status-badge.cancelled {
-  background-color: var(--danger-light);
-  color: var(--danger-dark);
+.status-badge[style*="PAYMENT_CONFIRMED"],
+.modal-btn-payment_confirmed {
+  background-color: #4169e1;
+  color: white;
+
 }
 
+.status-badge[style*="PREPARING"],
+.modal-btn-preparing {
+  background-color: #6a5acd;
+  color: white;
+
+}
+
+.status-badge[style*="READY_FOR_PICKUP"],
+.modal-btn-ready_for_pickup {
+  background-color: #32cd32;
+  color: white;
+
+}
+
+.status-badge[style*="PICKED_UP"],
+.modal-btn-picked_up {
+  background-color: #228b22;
+  color: white;
+
+}
+
+.status-badge[style*="COMPLETED"],
+.modal-btn-completed {
+  background-color: #4caf50;
+  color: white;
+
+}
+
+.status-badge[style*="CANCELLED"],
+.modal-btn-cancelled {
+  background-color: #ff0000;
+  color: white;
+
+}
+
+.status-badge[style*="REFUNDED"],
+.modal-btn-refunded {
+  background-color: #ffc0cb;
+  color: #333;
+}
+
+.modal-btn-danger {
+  background-color: #ff0000;
+  color: white;
+}
+
+
+.modal-btn-paid {
+  background-color: #228b22;
+  color: white;
+
+}
+
+/* Action Buttons */
 #orders .actions {
   display: flex;
   align-items: center;
@@ -143,86 +218,56 @@
   gap: 8px;
 }
 
-#orders .action-btn {
-  width: 32px;
-  height: 32px;
+.action-btn {
+  padding: 2px 8px;
   border: none;
-  border-radius: 50%;
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  transition: all 0.2s;
 }
 
-#orders .action-btn:hover {
-  transform: scale(1.1);
+.action-btn.view-detail {
+  background-color: #2196f3;
+  color: white;
 }
 
-#orders .action-btn.view-detail {
-  background-color: var(--primary-light);
-  color: var(--primary);
+.action-btn.delete-order {
+  background-color: #ff0000;
+  color: white;
 }
 
-#orders .action-btn.status-change {
-  background-color: var(--info-light);
-  color: var(--info-dark);
+.action-btn.status-change {
+  background-color: #ff9800;
+  color: white;
 }
 
-#orders .action-btn.payment-status-change {
-  background-color: var(--success-light);
-  color: var(--success-dark);
+.action-btn.payment-status-change {
+  background-color: #4caf50;
+  color: white;
 }
 
-#orders .no-orders-found {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: var(--primary);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding: 24px;
-  background-color: var(--tertiary);
-  border-radius: 10px;
-  margin-top: 20px;
-  box-shadow: 0 2px 6px rgba(198, 40, 40, 0.1);
+.action-btn:hover {
+  opacity: 0.8;
 }
 
-#orders .no-orders-found i {
-  font-size: 30px;
-  color: var(--light-gray);
+/* Modal Styles */
+.status-flow {
+  margin: 15px 0;
 }
 
-#orders .no-orders-found p {
-  font-size: 18px;
+.status-options {
+  margin-top: 10px;
+}
+
+.status-option {
+  padding: 8px 12px;
+  margin: 5px 0;
+  background-color: #f5f5f5;
+  border-radius: 6px;
   font-weight: 500;
-  margin: 0;
 }
 
-/* Modal Buttons */
-#orders .modal-btn-processing {
-  background: var(--warning-light);
-  color: var(--warning-dark);
-}
-
-#orders .modal-btn-shipped {
-  background: var(--primary-light);
-  color: var(--primary-dark);
-}
-
-#orders .modal-btn-delivered {
-  background: var(--success-light);
-  color: var(--success-dark);
-}
-
-#orders .modal-btn-paid {
-  background: var(--success-light);
-  color: var(--success-dark);
-}
-
-/* Responsive styles */
+/* Responsive Styles */
 @media (max-width: 768px) {
   #orders .orders-header {
     flex-direction: column;

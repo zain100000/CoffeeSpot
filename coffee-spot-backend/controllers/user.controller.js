@@ -208,6 +208,7 @@ exports.updateUser = async (req, res) => {
     }
 
     if (req.body.userName) user.userName = req.body.userName;
+    if (req.body.address) user.address = req.body.address;
 
     // Handle profile picture update
     if (req.files && req.files.profilePicture) {

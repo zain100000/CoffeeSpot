@@ -14,10 +14,10 @@ import {theme} from '../../../styles/theme';
 import {globalStyles} from '../../../styles/globalStyles';
 import Header from '../../../utils/customComponents/customHeader/Header';
 import LeftIcon from '../../../assets/icons/chevron-left.png';
-import Button from '../../../utils/customComponents/customButton/Button';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {addToCart} from '../../../redux/slices/cartSlice';
 import Toast from 'react-native-toast-message';
+import Feather from 'react-native-vector-icons/Feather';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -25,6 +25,8 @@ const ProductDetail = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const {product} = useRoute().params;
+  const userDetails = useSelector(state => state.user.user);
+  const shippingFee = 50; // You can set your shipping fee here or fetch it from somewhere
 
   const handleAddToCart = async () => {
     try {
@@ -45,6 +47,28 @@ const ProductDetail = () => {
         text2: error.message,
       });
     }
+  };
+
+  const handleBuyNow = () => {
+    // Create a mock cart item for direct checkout
+    const cartItem = {
+      product: product._id,
+      title: product.title,
+      description: product.description,
+      unitPrice: product.price,
+      quantity: 1,
+      productImage: product.productImage,
+    };
+
+    // Calculate total amount
+    const totalAmount = product.price + shippingFee;
+
+    navigation.navigate('CheckOut', {
+      cartItems: [cartItem], // Pass the single product as an array
+      userDetails,
+      totalAmount,
+      shippingFee,
+    });
   };
 
   return (
@@ -96,14 +120,25 @@ const ProductDetail = () => {
             <Text style={styles.price}>PKR {product.price}</Text>
 
             <View style={styles.btnContainer}>
-              <Button
-                title="Add to Cart"
-                width={width * 0.43}
-                backgroundColor={theme.colors.primary}
-                textColor={theme.colors.white}
-                textStyle={styles.text}
+              <TouchableOpacity
                 onPress={handleAddToCart}
-              />
+                style={styles.iconContainer}>
+                <Feather
+                  name="shopping-bag"
+                  size={width * 0.06}
+                  color={theme.colors.tertiary}
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleBuyNow} // 👈 Updated to use handleBuyNow
+                style={styles.iconContainer}>
+                <Feather
+                  name="credit-card"
+                  size={width * 0.06}
+                  color={theme.colors.tertiary}
+                />
+              </TouchableOpacity>
             </View>
           </View>
         </ScrollView>
@@ -169,7 +204,7 @@ const styles = StyleSheet.create({
   infoContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: height * 0.01,
+    marginTop: height * 0.012,
     marginBottom: height * 0.01,
   },
 
@@ -188,20 +223,27 @@ const styles = StyleSheet.create({
   footerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: height * 0.078,
+    marginTop: height * 0.07,
     paddingBottom: height * 0.02,
     justifyContent: 'space-between',
   },
 
   price: {
-    fontSize: theme.typography.fontSize.lg,
+    fontSize: theme.typography.fontSize.md,
     fontFamily: theme.typography.poppins.bold,
     color: theme.colors.primary,
+    top: height * 0.006,
   },
 
-  text: {
-    fontSize: theme.typography.fontSize.sm,
-    fontFamily: theme.typography.poppins.regular,
-    top: height * 0.002,
+  btnContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.gap(2),
+  },
+
+  iconContainer: {
+    backgroundColor: theme.colors.primary,
+    padding: height * 0.014,
+    borderRadius: theme.borderRadius.circle,
   },
 });

@@ -7,6 +7,7 @@ import {
   setOrders,
   updateOrderStatus,
   updatePaymentStatus,
+  deleteOrder,
 } from "../../../redux/slices/orderSlice";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../../utils/customLoader/Loader";
@@ -20,13 +21,11 @@ const Orders = () => {
   const user = useSelector((state) => state.auth.user);
   const orders = useSelector((state) => state.orders.orders);
 
-  console.log("ORDERS", orders);
-
   const [search, setSearch] = useState("");
   const [selectedOrder, setSelectedOrder] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
-  const [isPaymentStatusModalOpen, setIsPaymentStatusModalOpen] =
-    useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [loadingAction, setLoadingAction] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -61,6 +60,33 @@ const Orders = () => {
     setIsStatusModalOpen(true);
   };
 
+  const handlePaymentStatusChange = (order) => {
+    setSelectedOrder(order);
+    setIsPaymentModalOpen(true);
+  };
+
+  const handleDeleteOrder = (order) => {
+    setSelectedOrder(order);
+    setIsDeleteModalOpen(true);
+  };
+
+  const getNextValidStatuses = (currentStatus) => {
+    switch (currentStatus) {
+      case "ORDER_RECEIVED":
+        return ["PAYMENT_CONFIRMED", "CANCELLED"];
+      case "PAYMENT_CONFIRMED":
+        return ["PREPARING", "REFUNDED"];
+      case "PREPARING":
+        return ["READY_FOR_PICKUP", "CANCELLED"];
+      case "READY_FOR_PICKUP":
+        return ["PICKED_UP"];
+      case "PICKED_UP":
+        return ["COMPLETED"];
+      default:
+        return [];
+    }
+  };
+
   const changeOrderStatus = async (status) => {
     setLoadingAction(status);
     try {
@@ -72,7 +98,9 @@ const Orders = () => {
           })
         ).unwrap();
 
-        toast.success(`Status changed to successfully!`);
+        toast.success(
+          `Status changed to ${status.replace(/_/g, " ")} successfully!`
+        );
 
         // Update local state
         const updatedOrders = orders.map((order) =>
@@ -89,11 +117,6 @@ const Orders = () => {
     }
   };
 
-  const handlePaymentStatusChange = (order) => {
-    setSelectedOrder(order);
-    setIsPaymentStatusModalOpen(true);
-  };
-
   const changePaymentStatus = async (payment) => {
     setLoadingAction(payment);
     try {
@@ -105,7 +128,7 @@ const Orders = () => {
           })
         ).unwrap();
 
-        toast.success(`Payment Status changed successfully!`);
+        toast.success(`Payment Status changed to ${payment} successfully!`);
 
         // Update local state
         const updatedOrders = orders.map((order) =>
@@ -117,7 +140,52 @@ const Orders = () => {
       toast.error(`Failed to change payment status: ${error.message}`);
     } finally {
       setLoadingAction(null);
-      setIsPaymentStatusModalOpen(false);
+      setIsPaymentModalOpen(false);
+      setSelectedOrder(null);
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "ORDER_RECEIVED":
+        return "#FFA500"; // Orange
+      case "PAYMENT_CONFIRMED":
+        return "#4169E1"; // Royal Blue
+      case "PREPARING":
+        return "#6A5ACD"; // Slate Blue
+      case "READY_FOR_PICKUP":
+        return "#32CD32"; // Lime Green
+      case "PICKED_UP":
+        return "#228B22"; // Forest Green
+      case "COMPLETED":
+        return "#4CAF50"; // Green
+      case "CANCELLED":
+        return "#FF0000"; // Red
+      case "REFUNDED":
+        return "#FFC0CB"; // Pink
+      default:
+        return "#808080"; // Gray
+    }
+  };
+
+  const handleDeleteOrderConfirm = async (orderId) => {
+    setLoadingAction(orderId);
+
+    try {
+      if (orderId) {
+        await dispatch(deleteOrder(orderId)).unwrap();
+
+        toast.success("Order deleted successfully!");
+
+        // Remove from local state
+        const updatedOrders = orders.filter((order) => order._id !== orderId);
+        dispatch(setOrders(updatedOrders));
+      }
+    } catch (error) {
+      toast.error(`Failed to delete order: ${error.message}`);
+    } finally {
+      setLoadingAction(null);
+      setIsDeleteModalOpen(false);
       setSelectedOrder(null);
     }
   };
@@ -136,7 +204,6 @@ const Orders = () => {
               width={300}
             />
           </div>
-          {/* Removed the "Add Product" button equivalent */}
         </div>
 
         <div className="table-responsive">
@@ -150,89 +217,124 @@ const Orders = () => {
                 <tr>
                   <th>Order ID</th>
                   <th>Customer</th>
+
                   <th>Payment</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredOrders.map((order) => (
-                  <tr key={order._id}>
-                    <td className="order-id">
-                      #{order._id.substring(18, 24).toUpperCase()}
-                    </td>
-                    <td className="order-customer">
-                      {order.userId?.userName || "N/A"}
-                    </td>
-                    <td className="payment-status">
-                      <span
-                        className={`payment-badge ${order.payment.toLowerCase()}`}
-                      >
-                        {order.payment}
-                      </span>
-                    </td>
-                    <td className="order-status">
-                      <span
-                        className={`status-badge ${order.status.toLowerCase()}`}
-                      >
-                        {order.status}
-                      </span>
-                    </td>
-                    <td className="actions">
-                      <button
-                        className="action-btn view-detail"
-                        onClick={() => handleViewDetail(order)}
-                      >
-                        <i className="fas fa-eye"></i>
-                      </button>
+                {filteredOrders.map((order) => {
+                  const nextStatuses = getNextValidStatuses(order.status);
+                  return (
+                    <tr key={order._id}>
+                      <td className="order-id">
+                        #{order._id.substring(18, 24).toUpperCase()}
+                      </td>
+                      <td className="order-customer">
+                        {order.userId?.userName || "N/A"}
+                      </td>
+                      <td className="payment-status">
+                        <span
+                          className={`payment-badge ${order.payment.toLowerCase()}`}
+                        >
+                          {order.payment}
+                        </span>
+                      </td>
+                      <td className="order-status">
+                        <span
+                          className="status-badge"
+                          style={{
+                            backgroundColor: getStatusColor(order.status),
+                          }}
+                        >
+                          {order.status.replace(/_/g, " ")}
+                        </span>
+                      </td>
+                      <td className="actions">
+                        <button
+                          className="action-btn view-detail"
+                          onClick={() => handleViewDetail(order)}
+                        >
+                          <i className="fas fa-eye"></i>
+                        </button>
 
-                      <button
-                        className="action-btn status-change"
-                        onClick={() => handleStatusChange(order)}
-                      >
-                        <i className="fas fa-sync"></i>
-                      </button>
+                        {nextStatuses.length > 0 && (
+                          <button
+                            className="action-btn status-change"
+                            onClick={() => handleStatusChange(order)}
+                          >
+                            <i className="fas fa-sync"></i>
+                          </button>
+                        )}
 
-                      <button
-                        className="action-btn payment-status-change"
-                        onClick={() => handlePaymentStatusChange(order)}
-                      >
-                        <i className="fas fa-money-bill"></i>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                        {order.status === "ORDER_RECEIVED" && (
+                          <button
+                            className="action-btn payment-status-change"
+                            onClick={() => handlePaymentStatusChange(order)}
+                          >
+                            <i className="fas fa-money-bill"></i>
+                          </button>
+                        )}
+
+                        <button
+                          className="action-btn delete-order"
+                          onClick={() => handleDeleteOrder(order)}
+                        >
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           ) : (
             <div className="no-orders-found">
-              <i className="fas fa-box-open"></i>
+              <i className="fas fa-coffee"></i>
               <p>No Orders Found</p>
             </div>
           )}
         </div>
 
+        {/* Status Change Modal */}
         <Modal
           isOpen={isStatusModalOpen}
           onClose={() => setIsStatusModalOpen(false)}
-          title={`Change Status for #${
+          title={`Update Order Status for #${
             selectedOrder?._id?.substring(18, 24).toUpperCase() || "Order"
           }`}
           loading={loadingAction !== null}
-          buttons={["PROCESSING", "DELIVERED"].map((status) => ({
-            label: status.charAt(0) + status.slice(1).toLowerCase(),
-            className: `modal-btn-${status.toLowerCase()}`,
-            onClick: () => changeOrderStatus(status),
-            loading: loadingAction === status,
-          }))}
+          buttons={getNextValidStatuses(selectedOrder?.status).map(
+            (status) => ({
+              label: status.replace(/_/g, " "),
+              className: `modal-btn-${status.toLowerCase()}`,
+              onClick: () => changeOrderStatus(status),
+              loading: loadingAction === status,
+            })
+          )}
         >
-          Are you sure you want to change the status of this order?
+          <div className="status-flow">
+            <p>
+              Current Status:{" "}
+              <strong>{selectedOrder?.status?.replace(/_/g, " ")}</strong>
+            </p>
+            <p>Available Next Status:</p>
+            <div className="status-options">
+              {getNextValidStatuses(selectedOrder?.status).map((status) => (
+                <div key={status} className="status-option">
+                  → {status.replace(/_/g, " ")}
+                </div>
+              ))}
+            </div>
+          </div>
         </Modal>
 
+        {/* Payment Status Modal */}
         <Modal
-          isOpen={isPaymentStatusModalOpen}
-          onClose={() => setIsPaymentStatusModalOpen(false)}
-          title={`Change Payment Status for #${
+          isOpen={isPaymentModalOpen}
+          onClose={() => setIsPaymentModalOpen(false)}
+          title={`Confirm Payment for #${
             selectedOrder?._id?.substring(18, 24).toUpperCase() || "Order"
           }`}
           loading={loadingAction !== null}
@@ -243,7 +345,34 @@ const Orders = () => {
             loading: loadingAction === payment,
           }))}
         >
-          Are you sure you want to change the payment status of this order?
+          <p>Confirm that payment has been received for this order.</p>
+          <p>
+            Total Amount: <strong>Rs. {selectedOrder?.totalAmount}</strong>
+          </p>
+        </Modal>
+
+        {/* Order Deletion Modal */}
+        <Modal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          title={`Confirm Deletion for #${
+            selectedOrder?._id?.substring(18, 24).toUpperCase() || "Order"
+          }`}
+          loading={loadingAction !== null}
+          buttons={[
+            {
+              label: "Delete",
+              className: "modal-btn-danger",
+              onClick: () => handleDeleteOrderConfirm(selectedOrder?._id),
+              loading: loadingAction === selectedOrder?._id,
+            },
+          ]}
+        >
+          <p>Are you sure you want to delete this order?</p>
+          <p>
+            This action cannot be undone. The order total was{" "}
+            <strong>Rs. {selectedOrder?.totalAmount}</strong>
+          </p>
         </Modal>
       </div>
     </section>
