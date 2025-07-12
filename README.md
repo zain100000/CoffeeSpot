@@ -24,7 +24,7 @@ coffee-spot/
 
 ### Features
 - User authentication & profile management
-- Cart, ordering, and payment flow(local payment flow)
+- Cart, ordering, and payment flow(static payment flow)
 - order history
 
 ### Folder Structure
@@ -38,4 +38,51 @@ user-app/
 - utils/ # Utility/helper functions
 - App.js
 - package.json
+
+---
+## 🔧 Backend – Node.js + Express
+
+### Features
+- User and admin authentication (JWT)
+- Role-based access control 
+- CRUD for users, orders, shops, menus, and reviews
+- Payment(Static)
+- RESTful API design
+- MongoDB database integration
+
+### Folder Structure
+
+backend/
+- controllers/ # Route controllers
+- middlewares/ # jwt auth,
+- models/ # Mongoose schemas
+- routes/ #Routes
+- utils/ # cloudinary, otp, websocket
+- app.js/# backend entry point
+- .env/# environment variables
+- package.json
+  
+---
+## 🛠 Super Admin Panel – React.js
+
+### Features
+- Admin login
+- Dashboard (orders, users, etc)
+- Orders & products management
+- User and order moderation
+
+### Folder Structure
+super-admin-panel/
+- public/
+  src/
+- assets/ # Images, fonts, icons
+- navigation/ # React Navigation stack setup
+- redux/ # redux setup for backend api management
+- screens/ # Auth, Home, Profile, Orders, etc.
+- styles/ # Global styles and themes
+- utils/ # Utility/helper functions
+- App.js
+- package.json
+
+
 
