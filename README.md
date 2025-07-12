@@ -29,13 +29,13 @@ coffee-spot/
 
 ### Folder Structure
 user-app/
-├── src/
-│ ├── assets/ # Images, fonts, icons
-│ ├── navigation/ # React Navigation stack setup
-│ ├── redux/ # redux setup for backend api management
-│ ├── screens/ # Auth, Home, Profile, Orders, etc.
-│ ├── styles/ # Global styles and themes
-│ └── utils/ # Utility/helper functions
-├── App.js
-└── package.json
+ src/
+- assets/ # Images, fonts, icons
+- navigation/ # React Navigation stack setup
+- redux/ # redux setup for backend api management
+- screens/ # Auth, Home, Profile, Orders, etc.
+- styles/ # Global styles and themes
+- utils/ # Utility/helper functions
+- App.js
+- package.json
 
