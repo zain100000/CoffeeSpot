@@ -92,6 +92,13 @@ const Profile = () => {
     }
   };
 
+  const handleChatNavigate = () => {
+    console.log('Navigating to Chat with userId:', user?.id);
+    navigation.navigate('Chat', {
+      userId: user?.id,
+    });
+  };
+
   return (
     <LinearGradient
       colors={[theme.colors.primary, theme.colors.tertiary]}
@@ -170,7 +177,7 @@ const Profile = () => {
               iconName="headset"
               iconColor={theme.colors.primary}
               rightIcon="chevron-forward"
-              onPressFunction={() => navigation.navigate('Customer_Care')}
+              onPressFunction={handleChatNavigate}
             />
           </View>
 

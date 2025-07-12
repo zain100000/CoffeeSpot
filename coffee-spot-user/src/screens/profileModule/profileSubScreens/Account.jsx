@@ -200,7 +200,7 @@ const Account = () => {
               <View style={styles.InputFieldContainer}>
                 <Text style={styles.label}>Address</Text>
                 <InputField
-                  placeholder="Address"
+                  placeholder="House, Street, Area, City, LandMark!"
                   value={address}
                   onChangeText={handleAddressChange}
                   leftIcon={
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
 
   scrollContainer: {
     paddingVertical: height * 0.02,
-    paddingHorizontal: width * 0.034,
+    paddingHorizontal: width * 0.024,
   },
 
   headerTitle: {
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     color: theme.colors.white,
   },
 
-  btnContainer:{
-    marginTop: height * 0.04
-  }
+  btnContainer: {
+    marginTop: height * 0.04,
+  },
 });
