@@ -98,24 +98,6 @@ const ProductDetail = () => {
             </Text>
           </View>
 
-          <View style={styles.infoContainer}>
-            <Text style={styles.infoLabel}>Stock</Text>
-            <Text
-              style={[
-                styles.infoValue,
-                {
-                  color:
-                    product.stock > 0
-                      ? theme.colors.success
-                      : theme.colors.error,
-                },
-              ]}>
-              {product.stock > 0
-                ? `${product.stock} available`
-                : 'Out of stock'}
-            </Text>
-          </View>
-
           <View style={styles.footerContainer}>
             <Text style={styles.price}>PKR {product.price}</Text>
 

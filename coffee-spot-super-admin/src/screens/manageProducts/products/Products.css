@@ -101,29 +101,6 @@
   margin-top: 4px;
 }
 
-#products .stock-badge {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-#products .stock-badge.in-stock {
-  background-color: var(--success-light);
-  color: var(--success-dark);
-}
-
-#products .stock-badge.low-stock {
-  background-color: var(--warning-light);
-  color: var(--warning-dark);
-}
-
-#products .stock-badge.out-of-stock {
-  background-color: var(--danger-light);
-  color: var(--danger-dark);
-}
-
 #products .actions {
   display: flex;
   position: absolute;

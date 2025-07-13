@@ -76,13 +76,6 @@ export const validateCategory = (category) => {
   return "";
 };
 
-export const validateStock = (stock) => {
-  if (!stock) {
-    return "Stock is required";
-  }
-  return "";
-};
-
 // Unified field validation function
 export const validateFields = (fields) => {
   const validationFunctions = {
@@ -95,7 +88,6 @@ export const validateFields = (fields) => {
     description: validateDescription,
     price: validatePrice,
     category: validateCategory,
-    stock: validateStock,
   };
 
   const errors = {};

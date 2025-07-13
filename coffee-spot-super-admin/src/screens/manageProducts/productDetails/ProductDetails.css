@@ -104,30 +104,6 @@
   color: var(--success-dark);
 }
 
-/* Stock Badge */
-#product-detail .stock-badge {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-weight: 500;
-  font-size: 14px;
-}
-
-#product-detail .stock-badge.in-stock {
-  background-color: var(--success-light);
-  color: var(--success-dark);
-}
-
-#product-detail .stock-badge.low-stock {
-  background-color: var(--warning-light);
-  color: var(--warning-dark);
-}
-
-#product-detail .stock-badge.out-of-stock {
-  background-color: var(--danger-light);
-  color: var(--danger-dark);
-}
-
 /* Loader */
 #product-detail .loader-container {
   display: flex;

@@ -28,12 +28,6 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
 
-    stock: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-
     // Admin who added the product
     addedBy: {
       type: mongoose.Schema.Types.ObjectId,

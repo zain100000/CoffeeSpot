@@ -22,6 +22,8 @@ import ProductCard from '../../utils/customComponents/customCards/productCards/P
 import {useNavigation} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import Loader from '../../utils/customComponents/customLoader/Loader';
+import {getAllReviews} from '../../redux/slices/reviewSlice';
+import ReviewCard from '../../utils/customComponents/customReview/Review';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -33,6 +35,7 @@ const Home = () => {
   const user = useSelector(state => state.auth.user);
   const userProfile = useSelector(state => state.user.user);
   const products = useSelector(state => state.product.products);
+  const reviews = useSelector(state => state.review.reviews);
 
   const categories = useMemo(() => {
     const categoryMap = {};
@@ -71,6 +74,7 @@ const Home = () => {
     if (user?.id) {
       dispatch(getUser(user.id));
       dispatch(getAllProducts());
+      dispatch(getAllReviews());
     }
   }, [dispatch, user]);
 
@@ -86,8 +90,7 @@ const Home = () => {
     let newGreeting = '';
     if (hour < 12) newGreeting = 'Good Morning';
     else if (hour < 17) newGreeting = 'Good Afternoon';
-    else if (hour < 20) newGreeting = 'Good Evening';
-    else if (hour < 24) newGreeting = 'Good Evening';
+    else newGreeting = 'Good Evening';
     setGreeting(newGreeting);
   };
 
@@ -107,11 +110,18 @@ const Home = () => {
   };
 
   const handleChatNavigate = () => {
-    console.log('Navigating to Chat with userId:', user?.id);
     navigation.navigate('Chat', {
       userId: user?.id,
     });
   };
+
+  const formattedReviews = useMemo(() => {
+    return reviews.map(review => ({
+      text: review.comment,
+      name: userProfile?.userName || 'Anonymous',
+      animation: require('../../assets/animations/customer-reviews.json'),
+    }));
+  }, [reviews, userProfile]);
 
   return (
     <LinearGradient
@@ -152,7 +162,6 @@ const Home = () => {
                 />
               </Text>
             </View>
-
             <View style={styles.greetingRightContainer}>
               <TouchableOpacity activeOpacity={0.8}>
                 <Image
@@ -208,6 +217,17 @@ const Home = () => {
                 </LinearGradient>
               </ImageBackground>
             </View>
+          </View>
+
+          <View style={styles.reviewSection}>
+            <Text style={styles.reviewTitle}>Customer's Review</Text>
+            <Text style={styles.reviewDescription}>
+              We always appreciate feedback from our customers, both excellent
+              and even constructive.
+            </Text>
+            {formattedReviews.length > 0 ? (
+              <ReviewCard reviews={formattedReviews} />
+            ) : null}
           </View>
         </ScrollView>
       )}
@@ -313,24 +333,6 @@ const styles = StyleSheet.create({
     gap: theme.gap(1),
   },
 
-  elevatedCard: {
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    borderRadius: 16,
-    elevation: 6,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 3},
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
-  },
-
-  cardTitle: {
-    color: theme.colors.tertiary,
-    fontFamily: theme.typography.poppins.bold,
-    fontSize: theme.typography.fontSize.md,
-  },
-
   scrollContent: {
     paddingBottom: height * 0.1,
   },
@@ -339,5 +341,26 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+
+  reviewSection: {
+    marginTop: height * 0.04,
+    paddingHorizontal: width * 0.05,
+    marginBottom: height * 0.04,
+  },
+
+  reviewTitle: {
+    fontSize: theme.typography.fontSize.xl,
+    fontFamily: theme.typography.poppins.bold,
+    color: theme.colors.white,
+    marginBottom: height * 0.02,
+    textAlign: 'center',
+  },
+
+  reviewDescription: {
+    fontSize: width * 0.04,
+    fontFamily: theme.typography.poppins.regular,
+    color: theme.colors.gray,
+    textAlign: 'center',
   },
 });

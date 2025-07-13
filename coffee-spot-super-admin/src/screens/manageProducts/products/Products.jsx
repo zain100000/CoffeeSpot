@@ -39,17 +39,14 @@ const Products = () => {
   }, [dispatch, user?.id]);
 
   const filteredProducts = (Array.isArray(products) ? products : []).filter(
-  (product) =>
-    product.title &&
-    Array.isArray(product.category) &&
-    (
-      product.title.toLowerCase().includes(search.toLowerCase()) ||
-      product.category.some(cat =>
-        cat.toLowerCase().includes(search.toLowerCase())
-      )
-    )
-);
-
+    (product) =>
+      product.title &&
+      Array.isArray(product.category) &&
+      (product.title.toLowerCase().includes(search.toLowerCase()) ||
+        product.category.some((cat) =>
+          cat.toLowerCase().includes(search.toLowerCase())
+        ))
+  );
 
   const handleSearch = (e) => setSearch(e.target.value);
 
@@ -127,7 +124,6 @@ const Products = () => {
                   <th>Product</th>
                   <th>Category</th>
                   <th>Price</th>
-                  <th>Stock</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -156,19 +152,6 @@ const Products = () => {
                         : product.category}
                     </td>
                     <td>PKR{product.price}</td>
-                    <td>
-                      <span
-                        className={`stock-badge ${
-                          product.stock > 10
-                            ? "in-stock"
-                            : product.stock > 0
-                            ? "low-stock"
-                            : "out-of-stock"
-                        }`}
-                      >
-                        {product.stock}
-                      </span>
-                    </td>
                     <td className="actions">
                       {/* <button
                         className="action-btn view-btn"

@@ -25,14 +25,12 @@ const Dashboard = () => {
   }, [dispatch, user?.id]);
 
   // Product statistics
-  const { totalProducts, totalStock, outOfStock } = products.reduce(
+  const { totalProducts } = products.reduce(
     (acc, product) => {
       acc.totalProducts++;
-      acc.totalStock += product.stock || 0;
-      if (product.stock <= 0) acc.outOfStock++;
       return acc;
     },
-    { totalProducts: 0, totalStock: 0, outOfStock: 0 }
+    { totalProducts: 0 }
   );
 
   // Review statistics
@@ -41,7 +39,7 @@ const Dashboard = () => {
     reviews.reduce((acc, review) => acc + (review.rating || 0), 0) /
     (totalReviews || 1);
 
-  // Order statistics with new enums
+  // Order statistics
   const {
     orderReceived: orderReceivedCount,
     paymentConfirmed: paymentConfirmedCount,
@@ -54,7 +52,7 @@ const Dashboard = () => {
     total: totalOrders,
   } = orderList.reduce(
     (acc, order) => {
-      switch(order.status) {
+      switch (order.status) {
         case "ORDER_RECEIVED":
           acc.orderReceived++;
           break;
@@ -109,14 +107,14 @@ const Dashboard = () => {
             margin: 0,
             paddingLeft: "10px",
             borderLeft: "4px solid var(--primary)",
-            marginBottom: "40px"
+            marginBottom: "40px",
           }}
         >
           Dashboard Overview
         </h2>
 
         <div className="row g-2 mb-4">
-          <div className="col-12 col-md-6 col-lg-3">
+          <div className="col-12 col-md-6 col-lg-4">
             <Card
               onClick={() => handleNavigate("/admin/products/manage-products")}
               title="Products"
@@ -126,34 +124,13 @@ const Dashboard = () => {
                   style={{ animationDuration: "2s" }}
                 />
               }
-              stats={[
-                { label: "Total", value: totalProducts },
-                { label: "Out of Stock", value: outOfStock },
-              ]}
+              stats={[{ label: "Total", value: totalProducts }]}
               bgClass="bg-white"
               textClass="text-dark"
             />
           </div>
 
-          <div className="col-12 col-md-6 col-lg-3">
-            <Card
-              onClick={() => handleNavigate("/admin/stocks/manage-stocks")}
-              title="Stock"
-              icon={
-                <i
-                  className="fas fa-warehouse fa-flip text-info"
-                  style={{ animationDuration: "3s" }}
-                />
-              }
-              stats={[
-                { label: "Total Stock", value: totalStock },                
-              ]}
-              bgClass="bg-white"
-              textClass="text-dark"
-            />
-          </div>
-
-          <div className="col-12 col-md-6 col-lg-3">
+          <div className="col-12 col-md-6 col-lg-4">
             <Card
               onClick={() => handleNavigate("/admin/reviews/manage-reviews")}
               title="Reviews"
@@ -172,7 +149,7 @@ const Dashboard = () => {
             />
           </div>
 
-          <div className="col-12 col-md-6 col-lg-3">
+          <div className="col-12 col-md-6 col-lg-4">
             <Card
               onClick={() => handleNavigate("/admin/orders/manage-orders")}
               title="Orders"

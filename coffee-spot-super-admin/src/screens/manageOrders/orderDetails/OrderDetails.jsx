@@ -166,8 +166,6 @@ const OrderDetails = () => {
                     e.target.src = "/default-order.png";
                   }}
                 />
-              </div>
-              <div className="item-cell">
                 {item.productId?.title || item.title || "Unknown Product"}
               </div>
               <div className="item-cell">{item.quantity}</div>

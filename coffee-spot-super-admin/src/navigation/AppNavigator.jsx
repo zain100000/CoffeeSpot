@@ -15,9 +15,6 @@ import AddProduct from "../screens/manageProducts/addProducts/AddProduct";
 import UpdateProduct from "../screens/manageProducts/updateProduct/UpdateProduct";
 import ProductDetails from "../screens/manageProducts/productDetails/ProductDetails";
 
-// Stock Management Screens
-import Stock from "../screens/manageStock/stock/Stock";
-
 // Review Management Screens
 import Reviews from "../screens/manageReviews/reviews/Reviews";
 
@@ -58,9 +55,6 @@ const AppNavigator = () => {
           path="products/product-details/:id"
           element={<ProductDetails />}
         />
-
-        {/* Stock Management Routes */}
-        <Route path="stocks/manage-stocks" element={<Stock />} />
 
         {/* Review Management Routes */}
         <Route path="reviews/manage-reviews" element={<Reviews />} />

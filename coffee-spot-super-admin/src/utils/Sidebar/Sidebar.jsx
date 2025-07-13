@@ -36,20 +36,6 @@ const Sidebar = () => {
           </NavLink>
 
           <NavLink
-            to="/admin/stocks/manage-stocks"
-            className={() =>
-              `sidebar-link ${
-                location.pathname.startsWith("/admin/stocks") ? "active" : ""
-              }`
-            }
-          >
-            <div className="sidebar-icon">
-              <i className="fas fa-warehouse"></i>
-            </div>
-            <span>Manage Stock</span>
-          </NavLink>
-
-          <NavLink
             to="/admin/reviews/manage-reviews"
             className={() =>
               `sidebar-link ${

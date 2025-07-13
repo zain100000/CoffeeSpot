@@ -11,7 +11,7 @@ exports.addProduct = async (req, res) => {
       });
     }
 
-    const { title, description, price, category, stock } = req.body;
+    const { title, description, price, category } = req.body;
 
     if (!req.files?.productImage) {
       return res.status(400).json({
@@ -30,7 +30,6 @@ exports.addProduct = async (req, res) => {
       description,
       price,
       category,
-      stock,
       productImage: imageUploadResult.url,
       addedBy: req.user.id,
     });

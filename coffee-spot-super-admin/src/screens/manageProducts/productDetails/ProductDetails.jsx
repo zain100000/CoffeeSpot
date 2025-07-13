@@ -63,24 +63,7 @@ const ProductDetails = () => {
               </div>
               <div className="detail-label">Price</div>
               <div className="detail-value price">PKR {product.price}</div>
-            </div>
-
-            <div className="detail-row">
-              <div className="detail-label">Stock</div>
-              <div className="detail-value">
-                <span
-                  className={`stock-badge ${
-                    product.stock > 10
-                      ? "in-stock"
-                      : product.stock > 0
-                      ? "low-stock"
-                      : "out-of-stock"
-                  }`}
-                >
-                  {product.stock}
-                </span>
-              </div>
-            </div>
+            </div>            
           </div>
         </div>
       </div>

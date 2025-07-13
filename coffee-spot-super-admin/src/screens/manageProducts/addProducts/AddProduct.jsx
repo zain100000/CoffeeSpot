@@ -10,7 +10,6 @@ import {
   validateDescription,
   validatePrice,
   validateCategory,
-  validateStock,
   validateFields,
 } from "../../../utils/customValidations/Validations";
 import { addProduct } from "../../../redux/slices/productSlice";
@@ -24,7 +23,6 @@ const AddProduct = () => {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState([]);
-  const [stock, setStock] = useState("");
   const [productImagePreview, setProductImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -32,7 +30,6 @@ const AddProduct = () => {
   const [descriptionError, setDescriptionError] = useState("");
   const [priceError, setPriceError] = useState("");
   const [categoryError, setCategoryError] = useState("");
-  const [stockError, setStockError] = useState("");
 
   useEffect(() => {
     const hasErrors =
@@ -40,23 +37,19 @@ const AddProduct = () => {
       descriptionError ||
       priceError ||
       categoryError ||
-      stockError ||
       !title ||
       !description ||
       !price ||
-      category.length === 0 ||
-      !stock;
+      category.length === 0;
   }, [
     titleError,
     descriptionError,
     priceError,
     categoryError,
-    stockError,
     title,
     description,
     price,
     category,
-    stock,
   ]);
 
   const handleTitleChange = (e) => {
@@ -80,11 +73,6 @@ const AddProduct = () => {
     setCategoryError(validateCategory(categories));
   };
 
-  const handleStockChange = (e) => {
-    setStock(e.target.value);
-    setStockError(validateStock(e.target.value));
-  };
-
   const handleImageSelect = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -103,7 +91,6 @@ const AddProduct = () => {
       description,
       price,
       category,
-      stock,
     };
 
     const errors = validateFields(fields);
@@ -147,7 +134,6 @@ const AddProduct = () => {
     setDescription("");
     setPrice("");
     setCategory([]);
-    setStock("");
     setProductImage(null);
     setProductImagePreview(null);
   };
@@ -225,18 +211,6 @@ const AddProduct = () => {
                   value={category.join(", ")}
                   onChange={handleCategoryChange}
                   error={categoryError}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="row">
-              <div className="col-md-6 mb-3">
-                <InputField
-                  label="Stock"
-                  value={stock}
-                  onChange={handleStockChange}
-                  error={stockError}
                   required
                 />
               </div>

@@ -48,7 +48,6 @@ const UpdateProduct = () => {
       formData.append("description", product.description);
       formData.append("price", product.price);
       formData.append("category", product.category);
-      formData.append("stock", product.stock);
       if (product.productImage instanceof File) {
         formData.append("productImage", product.productImage);
       }
@@ -143,17 +142,6 @@ const UpdateProduct = () => {
                       e.target.value.split(",").map((c) => c.trim())
                     )
                   }
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="row">
-              <div className="col-md-6 mb-3">
-                <InputField
-                  label="Stock"
-                  value={product.stock}
-                  onChange={(e) => handleChange("stock", e.target.value)}
                   required
                 />
               </div>

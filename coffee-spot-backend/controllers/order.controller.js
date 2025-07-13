@@ -24,7 +24,7 @@ exports.placeOrder = async (req, res) => {
       });
     }
 
-    // Validate stock and calculate subtotal
+    // Validate calculate subtotal
     let calculatedSubtotal = 0;
     for (const item of items) {
       const product = await Product.findById(item.productId);
@@ -35,15 +35,7 @@ exports.placeOrder = async (req, res) => {
         });
       }
 
-      if (product.stock < item.quantity) {
-        return res.status(400).json({
-          success: false,
-          message: `Insufficient stock for ${product.title}`,
-        });
-      }
-
       calculatedSubtotal += product.price * item.quantity;
-      // Don't reduce stock yet - only reduce when payment is confirmed
     }
 
     const numericShippingFee = parseFloat(shippingFee);
@@ -224,13 +216,6 @@ exports.cancelOrder = async (req, res) => {
       });
     }
 
-    // Restore stock
-    for (const item of order.items) {
-      await Product.findByIdAndUpdate(item.productId, {
-        $inc: { stock: item.quantity },
-      });
-    }
-
     order.status = "CANCELLED";
     await order.save();
 
@@ -325,15 +310,6 @@ exports.updateOrderStatus = async (req, res) => {
         success: false,
         message: "Order must be PICKED_UP before marking as COMPLETED",
       });
-    }
-
-    // Restore stock if cancelling or refunding
-    if (["CANCELLED", "REFUNDED"].includes(status)) {
-      for (const item of order.items) {
-        await Product.findByIdAndUpdate(item.productId, {
-          $inc: { stock: item.quantity },
-        });
-      }
     }
 
     // Update order status and history

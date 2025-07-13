@@ -5,6 +5,7 @@ import {combineReducers} from 'redux';
 import authReducer from '../slices/authSlice';
 import userReducer from '../slices/userSlice';
 import productReducer from '../slices/productSlice';
+import reviewReducer from '../slices/reviewSlice';
 import cartReducer from '../slices/cartSlice';
 import orderReducer from '../slices/orderSlice';
 
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   user: userReducer,
   product: productReducer,
+  review: reviewReducer,
   cart: cartReducer,
   order: orderReducer,
 });
